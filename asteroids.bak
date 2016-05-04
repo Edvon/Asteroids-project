@@ -42,27 +42,6 @@
     (define/public (get-image)
       image)
     
-    
-    ;; update-asteroids uses parameters provided by
-    ;; asteroid objects, which are stored in the asteroid-hash,
-    ;; calculates the asteroids' new positions and draws them.
-    (define/public (update-asteroid dc)
-      
-      ;; Drawing
-      (send dc draw-bitmap image xpos ypos)
-      
-      
-      ;; Logic
-      (set! health (- health 0.005))
-      (when (< health 0.001)
-        (destroy-asteroid name))
-      
-      
-      ;; Physics
-      (set! xpos (+ xpos dx))
-      (set! ypos (+ ypos dy)))
-    
-    
     ;; A method for destroying an asteroid and at the same time creating 2 new, smaller asteroids.
     ;; This creates the illusion, kind of, of the asteroid breaking into pieces.
     ;; We create the new asteroids in the vicinty of where the old asteroid was destroyed.

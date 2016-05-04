@@ -24,7 +24,7 @@
 (define *game-physics*
   (make-object game%))
 
-;; Initialize the game. Currently all this entails is
+;;; Initialize the game. Currently all this entails is
 ;; creating some asteroids. Procedure to be expanded and revised.
 (define (init-game)
   (make-object asteroid%)

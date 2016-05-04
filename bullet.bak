@@ -21,7 +21,7 @@
     (define/public (get-image)
       image)
     
-    ;;the x and y coordinets in the middle of the bitmap.
+;;the x and y coordinets in the middle of the bitmap.
     (define/public (mid-x)
       (+ xpos 5))
     (define/public (mid-y)
@@ -39,24 +39,5 @@
         (send dc draw-ellipse 0 0 10 10)))
     
     (create-bullet-image image)
-    
-    ;; update-ship uses parameters provided by
-    ;; bullet objects, which are stored in the bullet-hash,
-    ;; calculates the bullets' new positions and draws them.
-    ;; Currently, eh, unusable, to say the least...
-    (define/public (update-bullet dc)
-      
-      ;; Drawing
-      (send dc draw-bitmap image xpos ypos)
-      
-      ;; Logic
-      (set! health (- health 0.005))
-      (when (< health 0.001)
-        (destroy-bullet name))
-      
-      ;; Physics
-      (set! xpos (+ xpos dx))
-      (set! ypos (+ ypos dy)))
-    
     
     (super-new)))

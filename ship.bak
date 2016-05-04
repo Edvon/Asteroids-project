@@ -63,7 +63,7 @@
       (let ([bullet-name (gensym "bullet")])
         (hash-set! bullet-hash bullet-name
                    (make-object bullet% 1
-                     (send this tip-xpos) (send this tip-ypos) (- (* 5 (sin angle))) (- (* 5 (cos angle))) bullet-name))))
+                     (send this tip-xpos) (send this tip-ypos) (- (* 20 (sin angle))) (- (* 20 (cos angle))) bullet-name))))
 
     
     ;; Method for handling key-events. When the 'w' key is pressed we increase
@@ -72,10 +72,12 @@
     ;; When either'a' or 'd' are pressed we turn the ship.
     (define/public (move key-code)
       (case key-code
-        [(#\w) (unless (>= speed 0.35)
-                 (set! speed (+ speed 1)))
-               (set! dy (- dy (* speed (cos angle))))
-               (set! dx (- dx (* speed (sin angle))))]
+        [(#\w) (cond ((> speed 1)
+                      (set! speed 1))
+                     (else
+                      (set! speed (+ speed 0.35))
+                      (set! dy (- dy (* speed (cos angle))))
+                      (set! dx (- dx (* speed (sin angle))))))]
         [(#\a) (set! angle (+ angle 0.2))]
         [(#\d) (set! angle (- angle 0.2))]
         [(#\space) (fire)]))

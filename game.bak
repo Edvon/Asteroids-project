@@ -108,9 +108,16 @@
                     
                     ;; Drawing
                     (send dc draw-bitmap image xpos ypos)
+
+                     
+                    ;; Logic
+                    (set! health (- health 0.005))
+                    (set-field! health asteroid health)
+                    (when (< health 0.001)
+                      (send asteroid destroy-asteroid asteroid-name))
+                    
                     
                     ;; Physics
-                    
                     (set! xpos (+ xpos dx))
                     (set! ypos (+ ypos dy))
                     
