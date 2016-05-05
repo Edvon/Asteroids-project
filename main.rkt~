@@ -53,8 +53,8 @@
        [paint-callback (lambda (canvas dc)
                          (send *game-physics*
                                render
-                               ship-hash
-                               bullets-hash
+                               *player-1*
+                               bullet-hash
                                asteroids-hash
                                dc))]
        [keyboard-handler (lambda (key-event)
@@ -73,5 +73,5 @@
 (define (start-game)
   (init-game)
   (send *asteroids-window* show #t)
-  (send *game-timer* start 50)
+  (send *game-timer* start 16)
   (send *asteroids-game-canvas* focus))

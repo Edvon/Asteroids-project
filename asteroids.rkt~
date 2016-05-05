@@ -20,12 +20,12 @@
                 [diameter 200] ;; The diameter of the circle representing the asteroid.
                 [dx ((eval (random-ref '(+ -))) (random 1 4))] ;; The asteroid's speed in the x-direction. A number between -4 and 4.
                 [dy ((eval (random-ref '(+ -))) (random 1 4))] ;; The asteroid's speed in the y-direction. A number between -4 and 4.
-                [name (gensym "asteroid")] ;; A randomly generated name.
-                [id 4])
+                [health 2] ;; The asteroid's health.
+                [name (gensym "asteroid")]) ;; A randomly generated name.
+    
     ;; Method for generating a bitmap.
     (define image (make-bitmap diameter diameter))
     
-    ;;makes us able to use the middle of the bitmap for the object.
     (define/public (mid-x)
       (+ xpos 100))
     (define/public (mid-y)
@@ -34,10 +34,6 @@
       (set! xpos (- new-mid-x 100)))
     (define/public (set-mid-y! new-mid-y)
       (set! ypos (- new-mid-y 100)))
-    
-    ;;Provides the radius of the asteroid
-    (define/public (radius)
-      (/ diameter 2))
     
     ;; We add the astreoid to the hash-table asteroids-hash.
     (hash-set! asteroids-hash name this)
@@ -50,11 +46,16 @@
     ;; update-asteroids uses parameters provided by
     ;; asteroid objects, which are stored in the asteroid-hash,
     ;; calculates the asteroids' new positions and draws them.
-    (define/public (update dc)
+    (define/public (update-asteroid dc)
       
       ;; Drawing
       (send dc draw-bitmap image xpos ypos)
       
+      
+      ;; Logic
+      (set! health (- health 0.005))
+      (when (< health 0.001)
+        (destroy-asteroid name))
       
       
       ;; Physics
@@ -65,7 +66,7 @@
     ;; A method for destroying an asteroid and at the same time creating 2 new, smaller asteroids.
     ;; This creates the illusion, kind of, of the asteroid breaking into pieces.
     ;; We create the new asteroids in the vicinty of where the old asteroid was destroyed.
-    (define/public (destroy name)
+    (define/public (destroy-asteroid name)
       (for ([i 2])
         (make-object medium-asteroid% (+ xpos (* 20 i)) (+ ypos (* 20 i))))
       (hash-remove! asteroids-hash name))
@@ -88,6 +89,7 @@
     (super-new [xpos mxpos]
                [ypos mypos]
                [diameter 100]
+               [health 1]
                [name (gensym "medium-asteroid")])
     
     ;; We inherit xpos and ypos from our new instantiated object
@@ -99,8 +101,8 @@
     ;; create 3 even smaller asteroids. We supply the make-object call
     ;; with our inherited coordinates to, just as before, create the new asteroids
     ; close to where the old one disappeared.
-    (define/override (destroy name)
-      (for ([i 2])
+    (define/override (destroy-asteroid name)
+      (for ([i 3])
         (make-object small-asteroid% (+ new-xpos (* 10 i)) (+ new-ypos (* 10 i))))
       (hash-remove! asteroids-hash name))))
 
@@ -112,10 +114,11 @@
     (super-new [xpos sxpos]
                [ypos sypos]
                [diameter 50]
+               [health 0.5]
                [name (gensym "small-asteroid")])
     
     ;; The smallest asteroids don't create new asteroids when they're destroyed, but
     ;; simply vanish.
-    (define/override (destroy name)
+    (define/override (destroy-asteroid name)
       (hash-remove! asteroids-hash name))))
 
