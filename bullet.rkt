@@ -16,7 +16,7 @@
                 [name ""]
                 [id 3]
                 [angle 0]
-                [health 1]
+                [health 0.25]
                 [image (make-bitmap 10 10)])               
     
     ;;proveides the bitmap containing the bullet

@@ -58,9 +58,12 @@
                                asteroids-hash
                                dc))]
        [keyboard-handler (lambda (key-event)
-                           (let ((key-code (send key-event get-key-code)))
-                             (when (not (equal? key-code 'release))
-                               (send *player-1* move key-code))))]))
+                           (let ([key-code (send key-event get-key-code)]
+                                 [key-release-code (send key-event get-key-release-code)])
+                             
+                             (if (not (equal? key-code 'release))
+                               (send *player-1* key-handler key-code #t)
+                               (send *player-1* key-handler key-release-code #f))))]))
 
 ;; Define a timer which on every callback refreshes the canvas.
 (define *game-timer* (new timer%

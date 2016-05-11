@@ -95,6 +95,9 @@
     (inherit-field [new-xpos xpos]
                    [new-ypos ypos])
     
+    (define/override (update dc)
+      (super update dc))
+    
     ;; We override the definition of the destroy-asteroid method to make it
     ;; create 3 even smaller asteroids. We supply the make-object call
     ;; with our inherited coordinates to, just as before, create the new asteroids
@@ -113,9 +116,12 @@
                [ypos sypos]
                [diameter 50]
                [name (gensym "small-asteroid")])
+
+    (define/override-final (update dc)
+      (super update dc))
     
     ;; The smallest asteroids don't create new asteroids when they're destroyed, but
     ;; simply vanish.
-    (define/override (destroy name)
+    (define/override-final (destroy name)
       (hash-remove! asteroids-hash name))))
 
