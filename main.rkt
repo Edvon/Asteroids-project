@@ -7,10 +7,18 @@
 
 ;; Create an instance of the frame% class, *game-window*, on which we can put a
 ;; canvas.
+
+;; Game-window
 (define *asteroids-window* (new frame%
                                 [label "Asteroids"]
                                 [width 1920]
                                 [height 1080]))
+
+;; Menue-window
+(define *menue-window* (new frame%
+                            [label "Asteroids-menue"]
+                            [width 800]
+                            [height 600]))
 
 
 
@@ -30,9 +38,10 @@
   (make-object asteroid%)
   (make-object asteroid%))
 
-;; Define a class, game-canvas%, by inheriting from canvas%. game-canvas%
-;; is defined to call a some method, keyboard-handler, when a key-event occurs,
-;; i.e. when a key is pressed.
+;; Define a class, game-canvas% and, by inheriting from canvas%.
+;; game-canvas% is defined to call a some method, keyboard-handler,
+;; when a key-event occurs, i.e. when a key is pressed.
+
 (define game-canvas%
   (class canvas%
     (init-field [keyboard-handler display])
@@ -51,8 +60,7 @@
   (new game-canvas%
        [parent *asteroids-window*]
        [paint-callback (lambda (canvas dc)
-                         (send *game-physics*
-                               render
+                         (send *game-physics* render
                                ship-hash
                                bullets-hash
                                asteroids-hash
@@ -60,10 +68,22 @@
        [keyboard-handler (lambda (key-event)
                            (let ([key-code (send key-event get-key-code)]
                                  [key-release-code (send key-event get-key-release-code)])
-                             
-                             (if (not (equal? key-code 'release))
-                               (send *player-1* key-handler key-code #t)
-                               (send *player-1* key-handler key-release-code #f))))]))
+                             (if (equal? key-code 'release)
+                             (send *player-1* key-handler key-release-code #f)
+                             (send *player-1* key-handler key-code #t))))]))
+
+
+(define *asteroids-menue-canvas*
+  (new game-canvas%
+       [parent *menue-window*]
+       ;[paint-callback (lambda (canvas dc)
+            ;             ())]
+       [keyboard-handler (lambda (key-event)
+                           (let ([key-code (send key-event get-key-code)]
+                                 [key-release-code (send key-event get-key-release-code)])
+                             (if (equal? key-code 'release)
+                             (send *player-1* key-handler key-release-code #f)
+                             (send *player-1* key-handler key-code #t))))]))
 
 ;; Define a timer which on every callback refreshes the canvas.
 (define *game-timer* (new timer%
@@ -78,3 +98,9 @@
   (send *asteroids-window* show #t)
   (send *game-timer* start 50)
   (send *asteroids-game-canvas* focus))
+
+;; Define a procedure wich sends up the start-menue
+(define (start-menue)
+  (send *menue-window* show #t)
+  (send *game-timer* stop)
+  (send *asteroids-menue-canvas* focus))
