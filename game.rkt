@@ -24,15 +24,7 @@
           [(< ypos 0) (send obj set-mid-y! 1080)])))
     
     (define/public (key-handler key-code stat)
-      (case key-code
-        [(equal? key-code #\w) (hash-set! key-hash key-code stat)]
-        [(equal? key-code #\a) (hash-set! key-hash key-code stat)]
-        [(equal? key-code #\d) (hash-set! key-hash key-code stat)]
-        [(equal? key-code #\space) (hash-set! key-hash key-code stat)]
-        [(equal? key-code #\i) (hash-set! key-hash key-code stat)]
-        [(equal? key-code #\j) (hash-set! key-hash key-code stat)]
-        [(equal? key-code #\l) (hash-set! key-hash key-code stat)]
-        [(equal? key-code #\m) (hash-set! key-hash key-code stat)]))
+        (hash-set! key-hash key-code stat))
     
     ;;checks if two objects are closer to eachother than allowed
     (define (collision? obj-1 obj-2)
