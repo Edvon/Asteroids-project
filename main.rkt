@@ -1,23 +1,19 @@
 #lang racket
 (require racket/gui)
+(require "hash-tables.rkt")
 (require "ship.rkt")
-(require "game.rkt")
-(require "bullet.rkt")
 (require "asteroids.rkt")
-
-;; Create an instance of the frame% class, *game-window*, on which we can put a
-;; canvas.
-(define *asteroids-window* (new frame%
-                                [label "Asteroids"]
-                                [width 1920]
-                                [height 1080]))
-
+(require "game.rkt")
 
 
 ;; Create an instance of the ship%-class which is to be
 ;; controlled by the player.
 (define *player-1*
   (make-object ship%))
+
+(define *player-2*
+  (make-object ship% 9 (list #\i #\j #\l #\m)))
+
 
 ;; Create an instance of the game%-class which is supposed
 ;; to handle all physics, logic and rendering.
@@ -29,6 +25,14 @@
 (define (init-game)
   (make-object asteroid%)
   (make-object asteroid%))
+
+;; Create an instance of the frame% class, *game-window*, on which we can put a
+;; canvas.
+(define *asteroids-window* (new frame%
+                                [label "Asteroids"]
+                                [width 1920]
+                                [height 1080]))
+
 
 ;; Define a class, game-canvas%, by inheriting from canvas%. game-canvas%
 ;; is defined to call a some method, keyboard-handler, when a key-event occurs,
@@ -51,19 +55,15 @@
   (new game-canvas%
        [parent *asteroids-window*]
        [paint-callback (lambda (canvas dc)
-                         (send *game-physics*
-                               render
-                               ship-hash
-                               bullets-hash
-                               asteroids-hash
-                               dc))]
+                         (send *game-physics* render dc))]
+       
        [keyboard-handler (lambda (key-event)
                            (let ([key-code (send key-event get-key-code)]
                                  [key-release-code (send key-event get-key-release-code)])
                              
-                             (if (not (equal? key-code 'release))
-                               (send *player-1* key-handler key-code #t)
-                               (send *player-1* key-handler key-release-code #f))))]))
+                             (if (equal? key-code 'release)
+                                 (send *game-physics* key-handler key-release-code #f)
+                                 (send *game-physics* key-handler key-code #t))))]))
 
 ;; Define a timer which on every callback refreshes the canvas.
 (define *game-timer* (new timer%
@@ -75,6 +75,7 @@
 ;; showing the window and then starting the timer so we can refresh the canvas.
 (define (start-game)
   (init-game)
+  (send *asteroids-game-canvas* set-canvas-background (send the-color-database find-color "black"))
   (send *asteroids-window* show #t)
   (send *game-timer* start 50)
   (send *asteroids-game-canvas* focus))

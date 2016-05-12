@@ -1,6 +1,7 @@
 #lang racket
 (require racket/gui)
 (provide game%)
+(require "hash-tables.rkt")
 
 ;; game% is a class which handles the game's
 ;; physics, logic and drawing.
@@ -22,6 +23,17 @@
           [(> ypos 1080) (send obj set-mid-y! 0)]
           [(< ypos 0) (send obj set-mid-y! 1080)])))
     
+    (define/public (key-handler key-code stat)
+      (case key-code
+        [(equal? key-code #\w) (hash-set! key-hash key-code stat)]
+        [(equal? key-code #\a) (hash-set! key-hash key-code stat)]
+        [(equal? key-code #\d) (hash-set! key-hash key-code stat)]
+        [(equal? key-code #\space) (hash-set! key-hash key-code stat)]
+        [(equal? key-code #\i) (hash-set! key-hash key-code stat)]
+        [(equal? key-code #\j) (hash-set! key-hash key-code stat)]
+        [(equal? key-code #\l) (hash-set! key-hash key-code stat)]
+        [(equal? key-code #\m) (hash-set! key-hash key-code stat)]))
+    
     ;;checks if two objects are closer to eachother than allowed
     (define (collision? obj-1 obj-2)
       (<=
@@ -33,7 +45,7 @@
     ;; The acctual rendering method. Is called by the on-paint method
     ;; provided by the game-canvas% class. render just calls the update methods
     ;; above.
-    (define/public (render ship-hash bullets-hash asteroids-hash dc)
+    (define/public (render dc)
       (let* ((all-obj-lst (append (hash-values ship-hash)
                                   (hash-values bullets-hash)
                                   (hash-values asteroids-hash))))
