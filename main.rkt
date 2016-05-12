@@ -1,106 +1,908 @@
-#lang racket
-(require racket/gui)
-(require "ship.rkt")
-(require "game.rkt")
-(require "bullet.rkt")
-(require "asteroids.rkt")
+#reader(lib"read.ss""wxme")WXME0108 ## 
+#|
+   This file uses the GRacket editor format.
+   Open this file in DrRacket version 6.4 or later to read it.
 
-;; Create an instance of the frame% class, *game-window*, on which we can put a
-;; canvas.
+   Most likely, it was created by saving a program in DrRacket,
+   and it probably contains a program with non-text elements
+   (such as images or comment boxes).
 
-;; Game-window
-(define *asteroids-window* (new frame%
-                                [label "Asteroids"]
-                                [width 1920]
-                                [height 1080]))
-
-;; Menue-window
-(define *menue-window* (new frame%
-                            [label "Asteroids-menue"]
-                            [width 800]
-                            [height 600]))
-
-
-
-;; Create an instance of the ship%-class which is to be
-;; controlled by the player.
-(define *player-1*
-  (make-object ship%))
-
-;; Create an instance of the game%-class which is supposed
-;; to handle all physics, logic and rendering.
-(define *game-physics*
-  (make-object game%))
-
-;;; Initialize the game. Currently all this entails is
-;; creating some asteroids. Procedure to be expanded and revised.
-(define (init-game)
-  (make-object asteroid%)
-  (make-object asteroid%))
-
-;; Define a class, game-canvas% and, by inheriting from canvas%.
-;; game-canvas% is defined to call a some method, keyboard-handler,
-;; when a key-event occurs, i.e. when a key is pressed.
-
-(define game-canvas%
-  (class canvas%
-    (init-field [keyboard-handler display])
-    (define/override (on-char key-event)
-      (keyboard-handler key-event))
-    (super-new)))
-
-;; Define an instance of the game-canvas% class. We define the behavior
-;; of the keyboard-handler to call the move method in the ship% class.
-;; This might prove be inconvenient were we to implement a menu, since
-;; then not every key-event would be related to movement. We define the
-;; paint-callback argument of the on-paint method to be a call to the render
-;; method in the game% class. We provide the render method with all our
-;; created class objects so they can be rendered when we update the canvas.
-(define *asteroids-game-canvas*
-  (new game-canvas%
-       [parent *asteroids-window*]
-       [paint-callback (lambda (canvas dc)
-                         (send *game-physics* render
-                               ship-hash
-                               bullets-hash
-                               asteroids-hash
-                               dc))]
-       [keyboard-handler (lambda (key-event)
-                           (let ([key-code (send key-event get-key-code)]
-                                 [key-release-code (send key-event get-key-release-code)])
-                             (if (equal? key-code 'release)
-                             (send *player-1* key-handler key-release-code #f)
-                             (send *player-1* key-handler key-code #t))))]))
-
-
-(define *asteroids-menue-canvas*
-  (new game-canvas%
-       [parent *menue-window*]
-       ;[paint-callback (lambda (canvas dc)
-            ;             ())]
-       [keyboard-handler (lambda (key-event)
-                           (let ([key-code (send key-event get-key-code)]
-                                 [key-release-code (send key-event get-key-release-code)])
-                             (if (equal? key-code 'release)
-                             (send *player-1* key-handler key-release-code #f)
-                             (send *player-1* key-handler key-code #t))))]))
-
-;; Define a timer which on every callback refreshes the canvas.
-(define *game-timer* (new timer%
-                          [notify-callback (lambda ()
-                                             (send *asteroids-game-canvas*
-                                                   refresh))]))
-
-;; Define a procedure for initializing and starting the game. It does this by
-;; showing the window and then starting the timer so we can refresh the canvas.
-(define (start-game)
-  (init-game)
-  (send *asteroids-window* show #t)
-  (send *game-timer* start 50)
-  (send *asteroids-game-canvas* focus))
-
-;; Define a procedure wich sends up the start-menue
-(define (start-menue)
-  (send *menue-window* show #t)
-  (send *game-timer* stop)
-  (send *asteroids-menue-canvas* focus))
+            http://racket-lang.org/
+|#
+ 32 7 #"wxtext\0"
+3 1 6 #"wxtab\0"
+1 1 8 #"wximage\0"
+2 0 8 #"wxmedia\0"
+4 1 34 #"(lib \"syntax-browser.ss\" \"mrlib\")\0"
+1 0 16 #"drscheme:number\0"
+3 0 44 #"(lib \"number-snip.ss\" \"drscheme\" \"private\")\0"
+1 0 36 #"(lib \"comment-snip.ss\" \"framework\")\0"
+1 0 93
+(
+ #"((lib \"collapsed-snipclass.ss\" \"framework\") (lib \"collapsed-sni"
+ #"pclass-wxme.ss\" \"framework\"))\0"
+) 0 0 43 #"(lib \"collapsed-snipclass.ss\" \"framework\")\0"
+0 0 19 #"drscheme:sexp-snip\0"
+0 0 36 #"(lib \"cache-image-snip.ss\" \"mrlib\")\0"
+1 0 68
+(
+ #"((lib \"image-core.ss\" \"mrlib\") (lib \"image-core-wxme.rkt\" \"mr"
+ #"lib\"))\0"
+) 1 0 29 #"drscheme:bindings-snipclass%\0"
+1 0 101
+(
+ #"((lib \"ellipsis-snip.rkt\" \"drracket\" \"private\") (lib \"ellipsi"
+ #"s-snip-wxme.rkt\" \"drracket\" \"private\"))\0"
+) 2 0 88
+(
+ #"((lib \"pict-snip.rkt\" \"drracket\" \"private\") (lib \"pict-snip.r"
+ #"kt\" \"drracket\" \"private\"))\0"
+) 0 0 34 #"(lib \"bullet-snip.rkt\" \"browser\")\0"
+0 0 25 #"(lib \"matrix.ss\" \"htdp\")\0"
+1 0 22 #"drscheme:lambda-snip%\0"
+1 0 29 #"drclickable-string-snipclass\0"
+0 0 26 #"drracket:spacer-snipclass\0"
+0 0 57
+#"(lib \"hrule-snip.rkt\" \"macro-debugger\" \"syntax-browser\")\0"
+1 0 26 #"drscheme:pict-value-snip%\0"
+0 0 45 #"(lib \"image-snipr.ss\" \"slideshow\" \"private\")\0"
+1 0 38 #"(lib \"pict-snipclass.ss\" \"slideshow\")\0"
+2 0 55 #"(lib \"vertical-separator-snip.ss\" \"stepper\" \"private\")\0"
+1 0 18 #"drscheme:xml-snip\0"
+1 0 31 #"(lib \"xml-snipclass.ss\" \"xml\")\0"
+1 0 21 #"drscheme:scheme-snip\0"
+2 0 34 #"(lib \"scheme-snipclass.ss\" \"xml\")\0"
+1 0 10 #"text-box%\0"
+1 0 32 #"(lib \"text-snipclass.ss\" \"xml\")\0"
+1 0 1 6 #"wxloc\0"
+          0 0 57 0 1 #"\0"
+0 75 1 #"\0"
+0 12 90 -1 90 -1 3 -1 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 255 255 255 1 -1 0 9
+#"Standard\0"
+0 75 6 #"Menlo\0"
+0 15 90 -1 90 -1 3 -1 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 255 255 255 1 -1 2 1
+#"\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 -1 -1 -1 0 0 0 0 0 0 1 1 1 1 1 1 0 0 0 0 0 0 -1 -1 2 24
+#"framework:default-color\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 -1 -1 -1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 255 255 255 -1 -1 2
+1 #"\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 -1 -1 -1 0 0 0 0 0 0 0 0 0 1 1 1 150 0 150 0 0 0 -1 -1 2 15
+#"text:ports out\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 150 0 150 0 0 0 -1 -1 2 1
+#"\0"
+0 -1 1 #"\0"
+1.0 0 -1 -1 93 -1 -1 -1 0 0 0 0 0 0 0 0 0 1.0 1.0 1.0 255 0 0 0 0 0 -1
+-1 2 15 #"text:ports err\0"
+0 -1 1 #"\0"
+1 0 -1 -1 93 -1 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 255 0 0 0 0 0 -1 -1 2 1
+#"\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 -1 -1 -1 0 0 0 0 0 0 0 0 0 1 1 1 0 0 175 0 0 0 -1 -1 2 17
+#"text:ports value\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 0 0 175 0 0 0 -1 -1 2 1
+#"\0"
+0 -1 1 #"\0"
+1.0 0 92 -1 -1 -1 -1 -1 0 0 0 0 0 0 0 0 0 1.0 1.0 1.0 34 139 34 0 0 0 -1
+-1 2 27 #"Matching Parenthesis Style\0"
+0 -1 1 #"\0"
+1.0 0 92 -1 -1 -1 -1 -1 0 0 0 0 0 0 0 0 0 1.0 1.0 1.0 34 139 34 0 0 0 -1
+-1 2 1 #"\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 38 38 128 0 0 0 -1 -1 2 37
+#"framework:syntax-color:scheme:symbol\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 38 38 128 0 0 0 -1 -1 2 38
+#"framework:syntax-color:scheme:keyword\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 38 38 128 0 0 0 -1 -1 2 1
+#"\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 194 116 31 0 0 0 -1 -1 2
+38 #"framework:syntax-color:scheme:comment\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 194 116 31 0 0 0 -1 -1 2 1
+#"\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 41 128 38 0 0 0 -1 -1 2 37
+#"framework:syntax-color:scheme:string\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 41 128 38 0 0 0 -1 -1 2 35
+#"framework:syntax-color:scheme:text\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 41 128 38 0 0 0 -1 -1 2 39
+#"framework:syntax-color:scheme:constant\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 41 128 38 0 0 0 -1 -1 2 1
+#"\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 132 60 36 0 0 0 -1 -1 2 49
+#"framework:syntax-color:scheme:hash-colon-keyword\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 132 60 36 0 0 0 -1 -1 2 42
+#"framework:syntax-color:scheme:parenthesis\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 132 60 36 0 0 0 -1 -1 2 1
+#"\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 255 0 0 0 0 0 -1 -1 2 36
+#"framework:syntax-color:scheme:error\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 255 0 0 0 0 0 -1 -1 2 1
+#"\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 0 0 0 0 0 0 -1 -1 2 36
+#"framework:syntax-color:scheme:other\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 0 0 0 0 0 0 -1 -1 2 16
+#"Misspelled Text\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 -1 -1 -1 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0 0 0 0 -1 -1 2 1
+#"\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 81 112 203 0 0 0 -1 -1 2
+38 #"drracket:check-syntax:lexically-bound\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 81 112 203 0 0 0 -1 -1 2 1
+#"\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 178 34 34 0 0 0 -1 -1 2 28
+#"drracket:check-syntax:set!d\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 178 34 34 0 0 0 -1 -1 2 37
+#"drracket:check-syntax:unused-require\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 255 0 0 0 0 0 -1 -1 2 36
+#"drracket:check-syntax:free-variable\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 255 0 0 0 0 0 -1 -1 2 1
+#"\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 68 0 203 0 0 0 -1 -1 2 31
+#"drracket:check-syntax:imported\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 68 0 203 0 0 0 -1 -1 2 47
+#"drracket:check-syntax:my-obligation-style-pref\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 178 34 34 0 0 0 -1 -1 2 1
+#"\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 0 116 0 0 0 0 -1 -1 2 50
+#"drracket:check-syntax:their-obligation-style-pref\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 0 116 0 0 0 0 -1 -1 2 48
+#"drracket:check-syntax:unk-obligation-style-pref\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 0 0 0 0 0 0 -1 -1 2 1
+#"\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 139 142 28 0 0 0 -1 -1 2
+49 #"drracket:check-syntax:both-obligation-style-pref\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 139 142 28 0 0 0 -1 -1 2
+26 #"plt:htdp:test-coverage-on\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 0 0 0 0 0 0 -1 -1 2 1
+#"\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 1 0 0 0 0 0 0 255 165 0 0 0 0 -1 -1 2 27
+#"plt:htdp:test-coverage-off\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 1 0 0 0 0 0 0 255 165 0 0 0 0 -1 -1 4 1
+#"\0"
+0 70 1 #"\0"
+1.0 0 -1 -1 -1 -1 -1 -1 0 0 0 0 0 0 1.0 1.0 1.0 1.0 1.0 1.0 0 0 0 0 0 0
+-1 -1 4 4 #"XML\0"
+0 70 1 #"\0"
+1.0 0 -1 -1 -1 -1 -1 -1 0 0 0 0 0 0 1.0 1.0 1.0 1.0 1.0 1.0 0 0 0 0 0 0
+-1 -1 2 37 #"plt:module-language:test-coverage-on\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 0 0 0 0 1 1 1 0 0 0 0 0 0 -1 -1 2 38
+#"plt:module-language:test-coverage-off\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 93 -1 -1 0 1 0 0 0 1 0 0 0 0 0 0 255 165 0 0 0 0 -1 -1 4 1
+#"\0"
+0 71 1 #"\0"
+1.0 0 -1 -1 -1 -1 -1 -1 0 0 0 0 0 0 1.0 1.0 1.0 1.0 1.0 1.0 0 0 0 0 0 0
+-1 -1 4 1 #"\0"
+0 -1 1 #"\0"
+1.0 0 -1 -1 -1 -1 -1 -1 1 0 0 0 0 0 0 0 0 1.0 1.0 1.0 0 0 255 0 0 0 -1
+-1 4 1 #"\0"
+0 71 1 #"\0"
+1.0 0 -1 -1 -1 -1 -1 -1 1 0 0 0 0 0 0 0 0 1.0 1.0 1.0 0 0 255 0 0 0 -1
+-1 4 1 #"\0"
+0 71 1 #"\0"
+1.0 0 -1 -1 -1 -1 -1 -1 0 0 0 0 0 0 0 0 0 1.0 1.0 1.0 0 100 0 0 0 0 -1
+-1 4 1 #"\0"
+0 -1 1 #"\0"
+1.0 0 92 -1 -1 -1 -1 -1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 255 255 0 -1 -1 2
+1 #"\0"
+0 -1 1 #"\0"
+1 0 -1 -1 -1 -1 -1 -1 0 0 0 0 0 0 0 0 0 1 1 1 200 0 0 0 0 0 -1 -1
+          0 447 0 28 3 12 #"#lang racket"
+0 0 24 29 1 #"\n"
+0 0 24 3 1 #"("
+0 0 15 3 7 #"require"
+0 0 24 3 1 #" "
+0 0 14 3 10 #"racket/gui"
+0 0 24 3 1 #")"
+0 0 24 29 1 #"\n"
+0 0 24 3 1 #"("
+0 0 15 3 7 #"require"
+0 0 24 3 1 #" "
+0 0 19 3 17 #"\"hash-tables.rkt\""
+0 0 24 3 1 #")"
+0 0 24 29 1 #"\n"
+0 0 24 3 1 #"("
+0 0 15 3 7 #"require"
+0 0 24 3 1 #" "
+0 0 19 3 10 #"\"ship.rkt\""
+0 0 24 3 1 #")"
+0 0 24 29 1 #"\n"
+0 0 24 3 1 #"("
+0 0 15 3 7 #"require"
+0 0 24 3 1 #" "
+0 0 19 3 15 #"\"asteroids.rkt\""
+0 0 24 3 1 #")"
+0 0 24 29 1 #"\n"
+0 0 24 3 1 #"("
+0 0 15 3 7 #"require"
+0 0 24 3 1 #" "
+0 0 19 3 10 #"\"game.rkt\""
+0 0 24 3 1 #")"
+0 0 24 29 1 #"\n"
+0 0 24 29 1 #"\n"
+0 0 24 29 1 #"\n"
+0 0 24 29 1 #"\n"
+0 0 17 3 55 #";; Create an instance of the ship%-class which is to be"
+0 0 24 29 1 #"\n"
+0 0 17 3 28 #";; controlled by the player."
+0 0 24 29 1 #"\n"
+0 0 24 3 1 #"("
+0 0 15 3 6 #"define"
+0 0 24 3 1 #" "
+0 0 14 3 10 #"*player-1*"
+0 0 24 29 1 #"\n"
+0 0 24 3 3 #"  ("
+0 0 15 3 11 #"make-object"
+0 0 24 3 1 #" "
+0 0 14 3 5 #"ship%"
+0 0 24 3 2 #"))"
+0 0 24 29 1 #"\n"
+0 0 24 29 1 #"\n"
+0 0 24 3 1 #"("
+0 0 15 3 6 #"define"
+0 0 24 3 1 #" "
+0 0 14 3 10 #"*player-2*"
+0 0 24 29 1 #"\n"
+0 0 24 3 3 #"  ("
+0 0 15 3 11 #"make-object"
+0 0 24 3 1 #" "
+0 0 14 3 5 #"ship%"
+0 0 24 3 1 #" "
+0 0 21 3 1 #"9"
+0 0 24 3 2 #" ("
+0 0 14 3 4 #"list"
+0 0 24 3 1 #" "
+0 0 21 3 3 #"#\\i"
+0 0 24 3 1 #" "
+0 0 21 3 3 #"#\\j"
+0 0 24 3 1 #" "
+0 0 21 3 3 #"#\\l"
+0 0 24 3 1 #" "
+0 0 21 3 3 #"#\\m"
+0 0 24 3 3 #")))"
+0 0 24 29 1 #"\n"
+0 0 24 29 1 #"\n"
+0 0 24 29 1 #"\n"
+0 0 17 3 58
+#";; Create an instance of the game%-class which is supposed"
+0 0 24 29 1 #"\n"
+0 0 17 3 46 #";; to handle all physics, logic and rendering."
+0 0 24 29 1 #"\n"
+0 0 24 3 1 #"("
+0 0 15 3 6 #"define"
+0 0 24 3 1 #" "
+0 0 14 3 14 #"*game-physics*"
+0 0 24 29 1 #"\n"
+0 0 24 3 3 #"  ("
+0 0 15 3 11 #"make-object"
+0 0 24 3 1 #" "
+0 0 14 3 5 #"game%"
+0 0 24 3 2 #"))"
+0 0 24 29 1 #"\n"
+0 0 24 29 1 #"\n"
+0 0 17 3 54 #";;; Initialize the game. Currently all this entails is"
+0 0 24 29 1 #"\n"
+0 0 17 3 65
+#";; creating some asteroids. Procedure to be expanded and revised."
+0 0 24 29 1 #"\n"
+0 0 24 3 1 #"("
+0 0 15 3 6 #"define"
+0 0 24 3 2 #" ("
+0 0 14 3 9 #"init-game"
+0 0 24 3 1 #")"
+0 0 24 29 1 #"\n"
+0 0 24 3 3 #"  ("
+0 0 15 3 11 #"make-object"
+0 0 24 3 1 #" "
+0 0 14 3 9 #"asteroid%"
+0 0 24 3 1 #")"
+0 0 24 29 1 #"\n"
+0 0 24 3 3 #"  ("
+0 0 15 3 11 #"make-object"
+0 0 24 3 1 #" "
+0 0 14 3 9 #"asteroid%"
+0 0 24 3 2 #"))"
+0 0 24 29 1 #"\n"
+0 0 24 29 1 #"\n"
+0 0 24 29 1 #"\n"
+0 0 17 3 64
+#";; Define a class, game-canvas% and, by inheriting from canvas%."
+0 0 24 29 1 #"\n"
+0 0 17 3 67
+#";; game-canvas% is defined to call a some method, keyboard-handler,"
+0 0 24 29 1 #"\n"
+0 0 17 3 55 #";; when a key-event occurs, i.e. when a key is pressed."
+0 0 24 29 1 #"\n"
+0 0 24 29 1 #"\n"
+0 0 24 29 1 #"\n"
+0 0 17 3 79
+(
+ #";; Create an instance of the frame% class, *game-window*, on which w"
+ #"e can put a"
+) 0 0 24 29 1 #"\n"
+0 0 17 3 10 #";; canvas."
+0 0 24 29 1 #"\n"
+0 0 24 3 1 #"("
+0 0 15 3 6 #"define"
+0 0 24 3 1 #" "
+0 0 14 3 18 #"*asteroids-window*"
+0 0 24 3 2 #" ("
+0 0 14 3 3 #"new"
+0 0 24 3 1 #" "
+0 0 14 3 6 #"frame%"
+0 0 24 29 1 #"\n"
+0 0 24 3 33 #"                                ["
+0 0 14 3 5 #"label"
+0 0 24 3 1 #" "
+0 0 19 3 11 #"\"Asteroids\""
+0 0 24 3 1 #"]"
+0 0 24 29 1 #"\n"
+0 0 24 3 33 #"                                ["
+0 0 14 3 5 #"width"
+0 0 24 3 1 #" "
+0 0 21 3 4 #"1920"
+0 0 24 3 1 #"]"
+0 0 24 29 1 #"\n"
+0 0 24 3 33 #"                                ["
+0 0 14 3 6 #"height"
+0 0 24 3 1 #" "
+0 0 21 3 4 #"1080"
+0 0 24 3 3 #"]))"
+0 0 24 29 1 #"\n"
+0 0 24 29 1 #"\n"
+0 0 17 3 15 #";; Menue-window"
+0 0 24 29 1 #"\n"
+0 0 24 3 1 #"("
+0 0 15 3 6 #"define"
+0 0 24 3 1 #" "
+0 0 14 3 14 #"*menue-window*"
+0 0 24 3 2 #" ("
+0 0 14 3 3 #"new"
+0 0 24 3 1 #" "
+0 0 14 3 6 #"frame%"
+0 0 24 29 1 #"\n"
+0 0 24 3 29 #"                            ["
+0 0 14 3 5 #"label"
+0 0 24 3 1 #" "
+0 0 19 3 17 #"\"Asteroids-menue\""
+0 0 24 3 1 #"]"
+0 0 24 29 1 #"\n"
+0 0 24 3 29 #"                            ["
+0 0 14 3 5 #"width"
+0 0 24 3 1 #" "
+0 0 21 3 3 #"800"
+0 0 24 3 1 #"]"
+0 0 24 29 1 #"\n"
+0 0 24 3 29 #"                            ["
+0 0 14 3 6 #"height"
+0 0 24 3 1 #" "
+0 0 21 3 3 #"600"
+0 0 24 3 3 #"]))"
+0 0 24 29 1 #"\n"
+0 0 24 29 1 #"\n"
+0 0 17 3 73
+(
+ #";; Define a class, game-canvas%, by inheriting from canvas%. game-ca"
+ #"nvas%"
+) 0 0 24 29 1 #"\n"
+0 0 17 3 79
+(
+ #";; is defined to call a some method, keyboard-handler, when a key-ev"
+ #"ent occurs,"
+) 0 0 24 29 1 #"\n"
+0 0 17 3 30 #";; i.e. when a key is pressed."
+0 0 24 29 1 #"\n"
+0 0 24 29 1 #"\n"
+0 0 24 3 1 #"("
+0 0 15 3 6 #"define"
+0 0 24 3 1 #" "
+0 0 14 3 12 #"game-canvas%"
+0 0 24 29 1 #"\n"
+0 0 24 3 3 #"  ("
+0 0 15 3 5 #"class"
+0 0 24 3 1 #" "
+0 0 14 3 7 #"canvas%"
+0 0 24 29 1 #"\n"
+0 0 24 3 5 #"    ("
+0 0 14 3 10 #"init-field"
+0 0 24 3 2 #" ["
+0 0 14 3 16 #"keyboard-handler"
+0 0 24 3 1 #" "
+0 0 14 3 7 #"display"
+0 0 24 3 2 #"])"
+0 0 24 29 1 #"\n"
+0 0 24 3 5 #"    ("
+0 0 15 3 15 #"define/override"
+0 0 24 3 2 #" ("
+0 0 14 3 7 #"on-char"
+0 0 24 3 1 #" "
+0 0 14 3 9 #"key-event"
+0 0 24 3 1 #")"
+0 0 24 29 1 #"\n"
+0 0 24 3 7 #"      ("
+0 0 14 3 16 #"keyboard-handler"
+0 0 24 3 1 #" "
+0 0 14 3 9 #"key-event"
+0 0 24 3 2 #"))"
+0 0 24 29 1 #"\n"
+0 0 24 3 5 #"    ("
+0 0 14 3 9 #"super-new"
+0 0 24 3 3 #")))"
+0 0 24 29 1 #"\n"
+0 0 24 29 1 #"\n"
+0 0 17 3 71
+(
+ #";; Define an instance of the game-canvas% class. We define the behav"
+ #"ior"
+) 0 0 24 29 1 #"\n"
+0 0 17 3 70
+(
+ #";; of the keyboard-handler to call the move method in the ship% clas"
+ #"s."
+) 0 0 24 29 1 #"\n"
+0 0 17 3 70
+(
+ #";; This might prove be inconvenient were we to implement a menu, sin"
+ #"ce"
+) 0 0 24 29 1 #"\n"
+0 0 17 3 71
+(
+ #";; then not every key-event would be related to movement. We define "
+ #"the"
+) 0 0 24 29 1 #"\n"
+0 0 17 3 76
+(
+ #";; paint-callback argument of the on-paint method to be a call to th"
+ #"e render"
+) 0 0 24 29 1 #"\n"
+0 0 17 3 71
+(
+ #";; method in the game% class. We provide the render method with all "
+ #"our"
+) 0 0 24 29 1 #"\n"
+0 0 17 3 75
+(
+ #";; created class objects so they can be rendered when we update the "
+ #"canvas."
+) 0 0 24 29 1 #"\n"
+0 0 24 3 1 #"("
+0 0 15 3 6 #"define"
+0 0 24 3 1 #" "
+0 0 14 3 23 #"*asteroids-game-canvas*"
+0 0 24 29 1 #"\n"
+0 0 24 3 3 #"  ("
+0 0 14 3 3 #"new"
+0 0 24 3 1 #" "
+0 0 14 3 12 #"game-canvas%"
+0 0 24 29 1 #"\n"
+0 0 24 3 8 #"       ["
+0 0 14 3 6 #"parent"
+0 0 24 3 1 #" "
+0 0 14 3 18 #"*asteroids-window*"
+0 0 24 3 1 #"]"
+0 0 24 29 1 #"\n"
+0 0 24 3 8 #"       ["
+0 0 14 3 14 #"paint-callback"
+0 0 24 3 2 #" ("
+0 0 15 3 6 #"lambda"
+0 0 24 3 2 #" ("
+0 0 14 3 6 #"canvas"
+0 0 24 3 1 #" "
+0 0 14 3 2 #"dc"
+0 0 24 3 1 #")"
+0 0 24 29 1 #"\n"
+0 0 24 3 26 #"                         ("
+0 0 14 3 4 #"send"
+0 0 24 3 1 #" "
+0 0 14 3 14 #"*game-physics*"
+0 0 24 3 1 #" "
+0 0 14 3 6 #"render"
+0 0 24 29 1 #"\n"
+0 0 24 3 31 #"                               "
+0 0 14 3 9 #"ship-hash"
+0 0 24 29 1 #"\n"
+0 0 24 3 31 #"                               "
+0 0 14 3 12 #"bullets-hash"
+0 0 24 29 1 #"\n"
+0 0 24 3 31 #"                               "
+0 0 14 3 14 #"asteroids-hash"
+0 0 24 29 1 #"\n"
+0 0 24 3 31 #"                               "
+0 0 14 3 2 #"dc"
+0 0 24 3 3 #"))]"
+0 0 24 29 1 #"\n"
+0 0 24 3 8 #"       ["
+0 0 14 3 16 #"keyboard-handler"
+0 0 24 3 2 #" ("
+0 0 15 3 6 #"lambda"
+0 0 24 3 2 #" ("
+0 0 14 3 9 #"key-event"
+0 0 24 3 1 #")"
+0 0 24 29 1 #"\n"
+0 0 24 3 28 #"                           ("
+0 0 15 3 3 #"let"
+0 0 24 3 3 #" (["
+0 0 14 3 8 #"key-code"
+0 0 24 3 2 #" ("
+0 0 14 3 4 #"send"
+0 0 24 3 1 #" "
+0 0 14 3 9 #"key-event"
+0 0 24 3 1 #" "
+0 0 14 3 12 #"get-key-code"
+0 0 24 3 2 #")]"
+0 0 24 29 1 #"\n"
+0 0 24 3 34 #"                                 ["
+0 0 14 3 16 #"key-release-code"
+0 0 24 3 2 #" ("
+0 0 14 3 4 #"send"
+0 0 24 3 1 #" "
+0 0 14 3 9 #"key-event"
+0 0 24 3 1 #" "
+0 0 14 3 20 #"get-key-release-code"
+0 0 24 3 3 #")])"
+0 0 24 29 1 #"\n"
+0 0 24 3 30 #"                             ("
+0 0 14 3 2 #"if"
+0 0 24 3 2 #" ("
+0 0 14 3 6 #"equal?"
+0 0 24 3 1 #" "
+0 0 14 3 8 #"key-code"
+0 0 24 3 1 #" "
+0 0 21 3 1 #"'"
+0 0 14 3 7 #"release"
+0 0 24 3 1 #")"
+0 0 24 29 1 #"\n"
+0 0 24 3 30 #"                             ("
+0 0 14 3 4 #"send"
+0 0 24 3 1 #" "
+0 0 14 3 10 #"*player-1*"
+0 0 24 3 1 #" "
+0 0 14 3 11 #"key-handler"
+0 0 24 3 1 #" "
+0 0 14 3 16 #"key-release-code"
+0 0 24 3 1 #" "
+0 0 21 3 2 #"#f"
+0 0 24 3 1 #")"
+0 0 24 29 1 #"\n"
+0 0 24 3 30 #"                             ("
+0 0 14 3 4 #"send"
+0 0 24 3 1 #" "
+0 0 14 3 10 #"*player-1*"
+0 0 24 3 1 #" "
+0 0 14 3 11 #"key-handler"
+0 0 24 3 1 #" "
+0 0 14 3 8 #"key-code"
+0 0 24 3 1 #" "
+0 0 21 3 2 #"#t"
+0 0 24 3 7 #"))))]))"
+0 0 24 29 1 #"\n"
+0 0 24 29 1 #"\n"
+0 0 24 29 1 #"\n"
+0 7         979 4           0 0           0 162 0 24 3 1 #"("
+0 0 15 3 6 #"define"
+0 0 24 3 1 #" "
+0 0 14 3 24 #"*asteroids-menue-canvas*"
+0 0 24 29 1 #"\n"
+0 0 24 3 3 #"  ("
+0 0 14 3 3 #"new"
+0 0 24 3 1 #" "
+0 0 14 3 12 #"game-canvas%"
+0 0 24 29 1 #"\n"
+0 0 24 3 8 #"       ["
+0 0 14 3 6 #"parent"
+0 0 24 3 1 #" "
+0 0 14 3 14 #"*menue-window*"
+0 0 24 3 1 #"]"
+0 0 24 29 1 #"\n"
+0 0 24 3 7 #"       "
+0 0 17 3 36 #";[paint-callback (lambda (canvas dc)"
+0 0 24 29 1 #"\n"
+0 0 24 3 12 #"            "
+0 0 17 3 18 #";             ())]"
+0 0 24 29 1 #"\n"
+0 0 24 3 8 #"       ["
+0 0 14 3 16 #"keyboard-handler"
+0 0 24 3 2 #" ("
+0 0 15 3 6 #"lambda"
+0 0 24 3 2 #" ("
+0 0 14 3 9 #"key-event"
+0 0 24 3 1 #")"
+0 0 24 29 1 #"\n"
+0 0 24 3 28 #"                           ("
+0 0 15 3 3 #"let"
+0 0 24 3 3 #" (["
+0 0 14 3 8 #"key-code"
+0 0 24 3 2 #" ("
+0 0 14 3 4 #"send"
+0 0 24 3 1 #" "
+0 0 14 3 9 #"key-event"
+0 0 24 3 1 #" "
+0 0 14 3 12 #"get-key-code"
+0 0 24 3 2 #")]"
+0 0 24 29 1 #"\n"
+0 0 24 3 34 #"                                 ["
+0 0 14 3 16 #"key-release-code"
+0 0 24 3 2 #" ("
+0 0 14 3 4 #"send"
+0 0 24 3 1 #" "
+0 0 14 3 9 #"key-event"
+0 0 24 3 1 #" "
+0 0 14 3 20 #"get-key-release-code"
+0 0 24 3 3 #")])"
+0 0 24 29 1 #"\n"
+0 0 24 3 30 #"                             ("
+0 0 14 3 2 #"if"
+0 0 24 3 2 #" ("
+0 0 14 3 6 #"equal?"
+0 0 24 3 1 #" "
+0 0 14 3 8 #"key-code"
+0 0 24 3 1 #" "
+0 0 21 3 1 #"'"
+0 0 14 3 7 #"release"
+0 0 24 3 1 #")"
+0 0 24 29 1 #"\n"
+0 0 24 3 30 #"                             ("
+0 0 14 3 4 #"send"
+0 0 24 3 1 #" "
+0 0 14 3 10 #"*player-1*"
+0 0 24 3 1 #" "
+0 0 14 3 11 #"key-handler"
+0 0 24 3 1 #" "
+0 0 14 3 16 #"key-release-code"
+0 0 24 3 1 #" "
+0 0 21 3 2 #"#f"
+0 0 24 3 1 #")"
+0 0 24 29 1 #"\n"
+0 0 24 3 30 #"                             ("
+0 0 14 3 4 #"send"
+0 0 24 3 1 #" "
+0 0 14 3 10 #"*player-1*"
+0 0 24 3 1 #" "
+0 0 14 3 11 #"key-handler"
+0 0 24 3 1 #" "
+0 0 14 3 8 #"key-code"
+0 0 24 3 1 #" "
+0 0 21 3 2 #"#t"
+0 0 24 3 7 #"))))]))"
+0 0 24 29 1 #"\n"
+0 0 24 3 26 #"                         ("
+0 0 14 3 4 #"send"
+0 0 24 3 1 #" "
+0 0 14 3 14 #"*game-physics*"
+0 0 24 3 1 #" "
+0 0 14 3 6 #"render"
+0 0 24 3 1 #" "
+0 0 14 3 2 #"dc"
+0 0 24 3 9 #"))]      "
+0 0 24 29 1 #"\n"
+0 0 24 3 8 #"       ["
+0 0 14 3 16 #"keyboard-handler"
+0 0 24 3 2 #" ("
+0 0 15 3 6 #"lambda"
+0 0 24 3 2 #" ("
+0 0 14 3 9 #"key-event"
+0 0 24 3 1 #")"
+0 0 24 29 1 #"\n"
+0 0 24 3 28 #"                           ("
+0 0 15 3 3 #"let"
+0 0 24 3 3 #" (["
+0 0 14 3 8 #"key-code"
+0 0 24 3 2 #" ("
+0 0 14 3 4 #"send"
+0 0 24 3 1 #" "
+0 0 14 3 9 #"key-event"
+0 0 24 3 1 #" "
+0 0 14 3 12 #"get-key-code"
+0 0 24 3 2 #")]"
+0 0 24 29 1 #"\n"
+0 0 24 3 34 #"                                 ["
+0 0 14 3 16 #"key-release-code"
+0 0 24 3 2 #" ("
+0 0 14 3 4 #"send"
+0 0 24 3 1 #" "
+0 0 14 3 9 #"key-event"
+0 0 24 3 1 #" "
+0 0 14 3 20 #"get-key-release-code"
+0 0 24 3 31 #")])                            "
+0 0 24 29 1 #"\n"
+0 0 24 3 30 #"                             ("
+0 0 14 3 2 #"if"
+0 0 24 3 2 #" ("
+0 0 14 3 6 #"equal?"
+0 0 24 3 1 #" "
+0 0 14 3 8 #"key-code"
+0 0 24 3 1 #" "
+0 0 21 3 1 #"'"
+0 0 14 3 7 #"release"
+0 0 24 3 1 #")"
+0 0 24 29 1 #"\n"
+0 0 24 3 34 #"                                 ("
+0 0 14 3 4 #"send"
+0 0 24 3 1 #" "
+0 0 14 3 14 #"*game-physics*"
+0 0 24 3 1 #" "
+0 0 14 3 11 #"key-handler"
+0 0 24 3 1 #" "
+0 0 14 3 16 #"key-release-code"
+0 0 24 3 1 #" "
+0 0 21 3 2 #"#f"
+0 0 24 3 1 #")"
+0 0 24 29 1 #"\n"
+0 0 24 3 34 #"                                 ("
+0 0 14 3 4 #"send"
+0 0 24 3 1 #" "
+0 0 14 3 14 #"*game-physics*"
+0 0 24 3 1 #" "
+0 0 14 3 11 #"key-handler"
+0 0 24 3 1 #" "
+0 0 14 3 8 #"key-code"
+0 0 24 3 1 #" "
+0 0 21 3 2 #"#t"
+0 0 24 3 7 #"))))]))"
+0 0 24 29 1 #"\n"
+0           0 0 0 24 29 1 #"\n"
+0 0 24 29 1 #"\n"
+0 0 17 3 63
+#";; Define a timer which on every callback refreshes the canvas."
+0 0 24 29 1 #"\n"
+0 0 24 3 1 #"("
+0 0 15 3 6 #"define"
+0 0 24 3 1 #" "
+0 0 14 3 12 #"*game-timer*"
+0 0 24 3 2 #" ("
+0 0 14 3 3 #"new"
+0 0 24 3 1 #" "
+0 0 14 3 6 #"timer%"
+0 0 24 29 1 #"\n"
+0 0 24 3 27 #"                          ["
+0 0 14 3 15 #"notify-callback"
+0 0 24 3 2 #" ("
+0 0 15 3 6 #"lambda"
+0 0 24 3 3 #" ()"
+0 0 24 29 1 #"\n"
+0 0 24 3 46 #"                                             ("
+0 0 14 3 4 #"send"
+0 0 24 3 1 #" "
+0 0 14 3 23 #"*asteroids-game-canvas*"
+0 0 24 29 1 #"\n"
+0 0 24 3 51 #"                                                   "
+0 0 14 3 7 #"refresh"
+0 0 24 3 5 #"))]))"
+0 0 24 29 1 #"\n"
+0 0 24 29 1 #"\n"
+0 0 17 3 77
+(
+ #";; Define a procedure for initializing and starting the game. It doe"
+ #"s this by"
+) 0 0 24 29 1 #"\n"
+0 0 17 3 79
+(
+ #";; showing the window and then starting the timer so we can refresh "
+ #"the canvas."
+) 0 0 24 29 1 #"\n"
+0 0 24 3 1 #"("
+0 0 15 3 6 #"define"
+0 0 24 3 2 #" ("
+0 0 14 3 10 #"start-game"
+0 0 24 3 1 #")"
+0 0 24 29 1 #"\n"
+0 0 24 3 3 #"  ("
+0 0 14 3 9 #"init-game"
+0 0 24 3 1 #")"
+0 0 24 29 1 #"\n"
+0 0 24 3 3 #"  ("
+0 0 14 3 4 #"send"
+0 0 24 3 1 #" "
+0 0 14 3 23 #"*asteroids-game-canvas*"
+0 0 24 3 1 #" "
+0 0 14 3 21 #"set-canvas-background"
+0 0 24 3 2 #" ("
+0 0 14 3 4 #"send"
+0 0 24 3 1 #" "
+0 0 14 3 18 #"the-color-database"
+0 0 24 3 1 #" "
+0 0 14 3 10 #"find-color"
+0 0 24 3 1 #" "
+0 0 19 3 7 #"\"black\""
+0 0 24 3 2 #"))"
+0 0 24 29 1 #"\n"
+0 0 24 3 3 #"  ("
+0 0 14 3 4 #"send"
+0 0 24 3 1 #" "
+0 0 14 3 18 #"*asteroids-window*"
+0 0 24 3 1 #" "
+0 0 14 3 4 #"show"
+0 0 24 3 1 #" "
+0 0 21 3 2 #"#t"
+0 0 24 3 1 #")"
+0 0 24 29 1 #"\n"
+0 0 24 3 3 #"  ("
+0 0 14 3 4 #"send"
+0 0 24 3 1 #" "
+0 0 14 3 12 #"*game-timer*"
+0 0 24 3 1 #" "
+0 0 14 3 5 #"start"
+0 0 24 3 1 #" "
+0 0 21 3 2 #"50"
+0 0 24 3 1 #")"
+0 0 24 29 1 #"\n"
+0 0 24 3 3 #"  ("
+0 0 14 3 4 #"send"
+0 0 24 3 1 #" "
+0 0 14 3 23 #"*asteroids-game-canvas*"
+0 0 24 3 1 #" "
+0 0 14 3 5 #"focus"
+0 0 24 3 2 #"))"
+0 0 24 29 1 #"\n"
+0 0 24 29 1 #"\n"
+0 7         205 4           0 0           0 33 0 17 3 51
+#";; Define a procedure wich sends up the start-menue"
+0 0 24 29 1 #"\n"
+0 0 24 3 1 #"("
+0 0 15 3 6 #"define"
+0 0 24 3 2 #" ("
+0 0 14 3 11 #"start-menue"
+0 0 24 3 1 #")"
+0 0 24 29 1 #"\n"
+0 0 24 3 3 #"  ("
+0 0 14 3 4 #"send"
+0 0 24 3 1 #" "
+0 0 14 3 14 #"*menue-window*"
+0 0 24 3 1 #" "
+0 0 14 3 4 #"show"
+0 0 24 3 1 #" "
+0 0 21 3 2 #"#t"
+0 0 24 3 1 #")"
+0 0 24 29 1 #"\n"
+0 0 24 3 3 #"  ("
+0 0 14 3 4 #"send"
+0 0 24 3 1 #" "
+0 0 14 3 12 #"*game-timer*"
+0 0 24 3 1 #" "
+0 0 14 3 4 #"stop"
+0 0 24 3 1 #")"
+0 0 24 29 1 #"\n"
+0 0 24 3 3 #"  ("
+0 0 14 3 4 #"send"
+0 0 24 3 1 #" "
+0 0 14 3 24 #"*asteroids-menue-canvas*"
+0 0 24 3 1 #" "
+0 0 14 3 5 #"focus"
+0 0 24 3 2 #"))"
+0           0 0           0

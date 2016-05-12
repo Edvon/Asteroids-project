@@ -3,12 +3,7 @@
 (require racket/random)
 (provide asteroid%)
 (provide medium-asteroid%)
-(provide asteroids-hash)
-
-;; Create a hash table, asteroids-hash, in which all the asteroid-objects
-;; will be stored. We use hash tables to store stuff throughout the project
-;; because they're mutable, and it turns out to be rather convenient.
-(define asteroids-hash (make-hash))
+(require "hash-tables.rkt")
 
 
 ;; asteroid% contains the information for creating asteroids
@@ -27,13 +22,13 @@
     
     ;;makes us able to use the middle of the bitmap for the object.
     (define/public (mid-x)
-      (+ xpos 100))
+      (+ xpos (/ diameter 2)))
     (define/public (mid-y)
-      (+ ypos 100))
+      (+ ypos (/ diameter 2)))
     (define/public (set-mid-x! new-mid-x)
-      (set! xpos (- new-mid-x 100)))
+      (set! xpos (- new-mid-x (/ diameter 2))))
     (define/public (set-mid-y! new-mid-y)
-      (set! ypos (- new-mid-y 100)))
+      (set! ypos (- new-mid-y (/ diameter 2))))
     
     ;;Provides the radius of the asteroid
     (define/public (radius)
@@ -56,7 +51,6 @@
       (send dc draw-bitmap image xpos ypos)
       
       
-      
       ;; Physics
       (set! xpos (+ xpos dx))
       (set! ypos (+ ypos dy)))
@@ -73,6 +67,8 @@
     ;; A method which draws the asteroid on the bitmap.
     (define/public (create-asteroid-image bitmap-target)
       (let ([dc (new bitmap-dc% [bitmap bitmap-target])])
+        (send dc set-brush "black" 'solid)
+        (send dc set-pen "white" 1 'solid)
         (send dc draw-ellipse 0 0 diameter diameter)))
     
     (create-asteroid-image image)
@@ -116,7 +112,7 @@
                [ypos sypos]
                [diameter 50]
                [name (gensym "small-asteroid")])
-
+    
     (define/override-final (update dc)
       (super update dc))
     
