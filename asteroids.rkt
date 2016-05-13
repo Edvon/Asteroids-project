@@ -15,6 +15,7 @@
                 [diameter 200] ;; The diameter of the circle representing the asteroid.
                 [dx ((eval (random-ref '(+ -))) (random 1 4))] ;; The asteroid's speed in the x-direction. A number between -4 and 4.
                 [dy ((eval (random-ref '(+ -))) (random 1 4))] ;; The asteroid's speed in the y-direction. A number between -4 and 4.
+                [points 50]
                 [name (gensym "asteroid")] ;; A randomly generated name.
                 [id 4])
     ;; Method for generating a bitmap.
@@ -84,6 +85,7 @@
     (super-new [xpos mxpos]
                [ypos mypos]
                [diameter 100]
+               [points 75]
                [name (gensym "medium-asteroid")])
     
     ;; We inherit xpos and ypos from our new instantiated object
@@ -111,6 +113,7 @@
     (super-new [xpos sxpos]
                [ypos sypos]
                [diameter 50]
+               [points 150]
                [name (gensym "small-asteroid")])
     
     (define/override-final (update dc)

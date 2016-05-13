@@ -8,12 +8,13 @@
     (init-field 
      [xpos 0]
      [ypos 0]
-     [dx 5]
-     [dy 5]
+     [dx 10]
+     [dy 10]
      [name ""]
      [id 3]
      [angle 0]
-     [health 1]
+     [health 2]
+     [points 0]
      [image (make-bitmap 10 10)])               
     
     ;;proveides the bitmap containing the bullet

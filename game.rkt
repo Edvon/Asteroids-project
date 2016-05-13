@@ -24,7 +24,7 @@
           [(< ypos 0) (send obj set-mid-y! 1080)])))
     
     (define/public (key-handler key-code stat)
-        (hash-set! key-hash key-code stat))
+      (hash-set! key-hash key-code stat))
     
     ;;checks if two objects are closer to eachother than allowed
     (define (collision? obj-1 obj-2)
@@ -33,6 +33,9 @@
                 (sqr (- (send obj-1 mid-y) (send obj-2 mid-y)))))
        (+ (send obj-1 radius) (send obj-2 radius))))
     
+    (define (update-stats dc)
+      (send dc set-text-foreground "white")
+      (send dc draw-text (string-append "Score " (number->string score)) 10 10))
     
     ;; The acctual rendering method. Is called by the on-paint method
     ;; provided by the game-canvas% class. render just calls the update methods
@@ -40,24 +43,31 @@
     (define/public (render dc)
       (let* ((all-obj-lst (append (hash-values ship-hash)
                                   (hash-values bullets-hash)
-                                  (hash-values asteroids-hash))))
+                                  (hash-values asteroids-hash)
+                                  (hash-values ufo-hash))))
         (define (update-obj-lst)
           (set! all-obj-lst (append (hash-values ship-hash)
-                                      (hash-values bullets-hash)
-                                      (hash-values asteroids-hash))))
+                                    (hash-values bullets-hash)
+                                    (hash-values asteroids-hash))))
         (for-each (lambda (obj)
                     (send obj update dc)
+                    (printf "~a ~n" score)
                     (screen-wrap obj))
                   all-obj-lst)
+        
         (for-each (lambda (obj1)
                     (for-each (lambda (obj2)
                                 (unless (equal? (get-field id obj1)
                                                 (get-field id obj2))
                                   (when (collision? obj1 obj2)
+                                    (send obj1 destroy (get-field name obj1))
                                     (send obj2 destroy (get-field name obj2))
+                                    (when (= (or 1 9) (or (get-field id obj1) (get-field id obj2)))
+                                      (update-score (+ (get-field points obj1) (get-field points obj2))))
                                     (update-obj-lst))))
                               all-obj-lst))
-                  all-obj-lst)))
+                  all-obj-lst)
+        (update-stats dc)))
     (super-new)))
 
 

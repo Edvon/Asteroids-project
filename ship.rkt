@@ -15,10 +15,10 @@
                 [dx 0] ;The ship's speed in the x-direction.
                 [dy 0] ;The ship's speed in the y-direction.
                 [speed 0] ;The velocity.
-                [angle (/ pi 4)] ;The angle at which the ship is turned.
-                [health 4] ;When the ship is out of life it should be removed.
-                [cooldown 5] ;
-                [image (make-bitmap 100 100)] ;A bitmap to draw the ship in.    
+                [angle 0] ;The angle at which the ship is turned.
+                [lives 3] ;When the ship is out of life it should be removed.
+                [image (make-bitmap 100 100)] ;A bitmap to draw the ship in.
+                [points 0]
                 [name (gensym "ship")]) ;;Gives the ship a unique name
     
     
@@ -35,9 +35,9 @@
     
     ;; destroys the ship when out of health
     (define/public (destroy name)
-      (if (= 0 health)
-      (hash-remove! ship-hash name)
-      (set! health (- health 1))))
+      (if (= 0 lives)
+          (hash-remove! ship-hash name)
+          (set! lives (- lives 1))))
     
     ;; Method for drawing the ship in the bitmap.
     (define/private (create-ship-image bitmap-target)
@@ -96,11 +96,11 @@
     ;; Turn-left and turn-right changes the direction in wich the ship is moving.
     
     (define/private (turn-left)
-      (set! angle (+ angle 0.05)))
+      (set! angle (+ angle 0.1)))
     
     (define/private (turn-right)
-      (set! angle (- angle 0.05)))
-     
+      (set! angle (- angle 0.1)))
+    
     ;; create instances of the bullet%
     ;; class when the ship fires, add these to a hash table and then update
     ;; everything in the hash table by using game%.
@@ -110,11 +110,11 @@
                    (make-object bullet% 
                      (tip-xpos)
                      (tip-ypos)
-                     (- (* 15 (sin angle)))
-                     (- (* 15 (cos angle)))
+                     (- (* 25 (sin angle)))
+                     (- (* 25 (cos angle)))
                      bullet-name
                      id))))
-   
+    
     ;; function wich controls the input and if they are correct runs the
     ;; different move-functions.
     (define (steer)
@@ -125,7 +125,8 @@
       (when (hash-ref key-hash (third keys))
         (turn-right))
       (when (hash-ref key-hash (fourth keys))
-        (fire)))
+        (fire)
+        (hash-set! key-hash (fourth keys) #f)))
     
     
     ;; update-ship uses parameters provided by the
