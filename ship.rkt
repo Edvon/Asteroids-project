@@ -9,17 +9,27 @@
 (define ship%
   (class object%
     (init-field [id 1] ;;The identification-number för the ship
-                [keys (list #\w #\a #\d #\space)]
-                [xpos (random 1920)] ;The ship's x-coordinate.
-                [ypos (random 1080)] ;The ship's y-coordinate.
-                [dx 0] ;The ship's speed in the x-direction.
-                [dy 0] ;The ship's speed in the y-direction.
-                [speed 0] ;The velocity.
-                [angle 0] ;The angle at which the ship is turned.
-                [lives 3] ;When the ship is out of life it should be removed.
-                [image (make-bitmap 100 100)] ;A bitmap to draw the ship in.
-                [points 0]
-                [name (gensym "ship")]) ;;Gives the ship a unique name
+                [keys (list #\w #\a #\d #\space)])
+    
+    
+    (field [lives 3] ;When the ship is out of lives it should be removed.
+           [xpos (random 1920)] ;The ship's x-coordinate.
+           [ypos (random 1080)] ;The ship's y-coordinate.
+           [angle 0] ;The angle at which the ship is turned.
+           [radius 50] ;The radius of the object's hit-box.
+           [mid-xpos (+ xpos radius)]
+           [mid-ypos (+ ypos radius)]
+           [tip-xpos (- mid-xpos (* radius (sin angle)))]
+           [tip-ypos (- mid-ypos (* radius (cos angle)))]
+           [dx 0] ;The ship's speed in the x-direction.
+           [dy 0] ;The ship's speed in the y-direction.
+           [speed 0] ;The velocity.
+           [image (make-bitmap 100 100)] ;A bitmap to draw the ship in.
+           [points 0] ;The number of points the object is worth.
+           [score 0] ;The player's score.
+           [name (gensym "ship")]) ;;Gives the ship a unique name
+    
+    (super-new)
     
     
     ;; adds the ship to the ship-hash
@@ -33,11 +43,28 @@
     (define/public (get-image)
       image)
     
+    (define/public (get-score)
+      score)
+    
+    (define/public (update-score amt)
+      (set! score (+ score amt)))
+    
+    (define/public (get-lives)
+      lives)
+    
+    (define/public (obj-has-collided-with obj)
+      (let ([orig-radius radius])
+        (set! radius -100)
+        (send (new timer% [notify-callback (lambda ()
+                                             (set! radius orig-radius))]) start 200)
+        (if (= 0 lives)
+            (destroy name)
+            (set! lives (- lives 1)))))
+    
     ;; destroys the ship when out of health
-    (define/public (destroy name)
-      (if (= 0 lives)
-          (hash-remove! ship-hash name)
-          (set! lives (- lives 1))))
+    (define (destroy name)
+      (hash-remove! ship-hash name))
+    
     
     ;; Method for drawing the ship in the bitmap.
     (define/private (create-ship-image bitmap-target)
@@ -57,26 +84,17 @@
               100 100
               50 75)))
     
-    ;; The x and y coordinates for middle of the ship bitmap and for the
-    ;;tip of the ship.
+    (define/public (get-mid-xpos)
+      mid-xpos)
     
-    (define/public (mid-x)
-      (+ xpos 50))
-    (define/public (mid-y)
-      (+ ypos 50))
+    (define/public (get-mid-ypos)
+      mid-ypos)
+    
     (define/public (set-mid-x! new-mid-x)
-      (set! xpos (- new-mid-x 50)))
+      (set! xpos (- new-mid-x radius)))
+    
     (define/public (set-mid-y! new-mid-y)
-      (set! ypos (- new-mid-y 50)))
-    
-    (define/public (tip-xpos)
-      (- (send this mid-x) (* 50 (sin angle))))
-    (define/public (tip-ypos)
-      (- (send this mid-y) (* 50 (cos angle))))
-    
-    ;;provides the radius of the ship
-    (define/public (radius)
-      45)
+      (set! ypos (- new-mid-y radius)))
     
     ;;move functions
     
@@ -94,7 +112,6 @@
             (set! dx (- dx (* speed (sin angle)))))))
     
     ;; Turn-left and turn-right changes the direction in wich the ship is moving.
-    
     (define/private (turn-left)
       (set! angle (+ angle 0.1)))
     
@@ -107,13 +124,14 @@
     (define/private (fire)
       (let ([bullet-name (gensym "bullet")])
         (hash-set! bullets-hash bullet-name
-                   (make-object bullet% 
-                     (tip-xpos)
-                     (tip-ypos)
-                     (- (* 25 (sin angle)))
-                     (- (* 25 (cos angle)))
+                   (make-object bullet%
+                     this
+                     id
                      bullet-name
-                     id))))
+                     tip-xpos
+                     tip-ypos
+                     (- (* 25 (sin angle)))
+                     (- (* 25 (cos angle)))))))
     
     ;; function wich controls the input and if they are correct runs the
     ;; different move-functions.
@@ -149,13 +167,15 @@
         ;; Physics
         (set! xpos (+ xpos dx))
         (set! ypos (+ ypos dy))
+        (set! mid-xpos (+ xpos radius))
+        (set! mid-ypos (+ ypos radius))
+        (set! tip-xpos (- mid-xpos (* radius (sin angle))))
+        (set! tip-ypos (- mid-ypos (* radius (cos angle))))
         (set! dx (* dx 0.97))
         (set! dy (* dy 0.97))
         
         ;;steer
         (steer)))
     
-    (create-ship-image image)
-    
-    (super-new)))
+    (create-ship-image image)))
 

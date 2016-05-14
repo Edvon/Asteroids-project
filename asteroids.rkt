@@ -13,34 +13,59 @@
     (init-field [xpos (random 1920)] ;; The asteroid's current x-coordinate. Is updated whenever the screen in refreshed.
                 [ypos (random 1080)] ;; The asteroid's current y-coordinate. Is updated whenever the screen in refreshed.
                 [diameter 200] ;; The diameter of the circle representing the asteroid.
-                [dx ((eval (random-ref '(+ -))) (random 1 4))] ;; The asteroid's speed in the x-direction. A number between -4 and 4.
-                [dy ((eval (random-ref '(+ -))) (random 1 4))] ;; The asteroid's speed in the y-direction. A number between -4 and 4.
                 [points 50]
-                [name (gensym "asteroid")] ;; A randomly generated name.
-                [id 4])
-    ;; Method for generating a bitmap.
-    (define image (make-bitmap diameter diameter))
+                [name (gensym "asteroid")]) ;; A randomly generated name.
     
-    ;;makes us able to use the middle of the bitmap for the object.
-    (define/public (mid-x)
-      (+ xpos (/ diameter 2)))
-    (define/public (mid-y)
-      (+ ypos (/ diameter 2)))
-    (define/public (set-mid-x! new-mid-x)
-      (set! xpos (- new-mid-x (/ diameter 2))))
-    (define/public (set-mid-y! new-mid-y)
-      (set! ypos (- new-mid-y (/ diameter 2))))
     
-    ;;Provides the radius of the asteroid
-    (define/public (radius)
-      (/ diameter 2))
+    (field [id 4]
+           [radius (/ diameter 2)]
+           [mid-xpos (+ xpos radius)]
+           [mid-ypos (+ ypos radius)]
+           [dx ((eval (random-ref '(+ -))) (random 1 4))] ;; The asteroid's speed in the x-direction. A number between -4 and 4.
+           [dy ((eval (random-ref '(+ -))) (random 1 4))]) ;; The asteroid's speed in the y-direction. A number between -4 and 4.)
+    
+    (super-new)
     
     ;; We add the astreoid to the hash-table asteroids-hash.
     (hash-set! asteroids-hash name this)
     
+    ;; Method for generating a bitmap.
+    (define image (make-bitmap diameter diameter))
+    
     ;; Method which provides us with the bitmap containing the asteroid.
     (define/public (get-image)
       image)
+    
+    ;; A method which draws the asteroid on the bitmap.
+    (define/public (create-asteroid-image bitmap-target)
+      (let ([dc (new bitmap-dc% [bitmap bitmap-target])])
+        (send dc set-brush "black" 'solid)
+        (send dc set-pen "white" 1 'solid)
+        (send dc draw-ellipse 0 0 diameter diameter)))
+    
+    ;;makes us able to use the middle of the bitmap for the object.
+    (define/public (get-mid-xpos)
+      mid-xpos)
+    
+    (define/public (get-mid-ypos)
+      mid-ypos)
+    
+    (define/public (set-mid-x! new-mid-x)
+      (set! xpos (- new-mid-x radius)))
+    
+    (define/public (set-mid-y! new-mid-y)
+      (set! ypos (- new-mid-y radius)))
+    
+    (define/public (obj-has-collided-with obj)
+      (destroy name))
+    
+    ;; A method for destroying an asteroid and at the same time creating 2 new, smaller asteroids.
+    ;; This creates the illusion, kind of, of the asteroid breaking into pieces.
+    ;; We create the new asteroids in the vicinty of where the old asteroid was destroyed.
+    (define/public (destroy name)
+      (for ([i 2])
+        (make-object medium-asteroid% (+ xpos (* 20 i)) (+ ypos (* 20 i))))
+      (hash-remove! asteroids-hash name))
     
     
     ;; update-asteroids uses parameters provided by
@@ -51,29 +76,13 @@
       ;; Drawing
       (send dc draw-bitmap image xpos ypos)
       
-      
       ;; Physics
       (set! xpos (+ xpos dx))
-      (set! ypos (+ ypos dy)))
+      (set! ypos (+ ypos dy))
+      (set! mid-xpos (+ xpos radius))
+      (set! mid-ypos (+ ypos radius)))
     
-    
-    ;; A method for destroying an asteroid and at the same time creating 2 new, smaller asteroids.
-    ;; This creates the illusion, kind of, of the asteroid breaking into pieces.
-    ;; We create the new asteroids in the vicinty of where the old asteroid was destroyed.
-    (define/public (destroy name)
-      (for ([i 2])
-        (make-object medium-asteroid% (+ xpos (* 20 i)) (+ ypos (* 20 i))))
-      (hash-remove! asteroids-hash name))
-    
-    ;; A method which draws the asteroid on the bitmap.
-    (define/public (create-asteroid-image bitmap-target)
-      (let ([dc (new bitmap-dc% [bitmap bitmap-target])])
-        (send dc set-brush "black" 'solid)
-        (send dc set-pen "white" 1 'solid)
-        (send dc draw-ellipse 0 0 diameter diameter)))
-    
-    (create-asteroid-image image)
-    (super-new)))
+    (create-asteroid-image image)))
 
 (define medium-asteroid%
   (class asteroid%
