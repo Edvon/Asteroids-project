@@ -16,7 +16,8 @@
            [xpos (random 1920)] ;The ship's x-coordinate.
            [ypos (random 1080)] ;The ship's y-coordinate.
            [angle 0] ;The angle at which the ship is turned.
-           [radius 50] ;The radius of the object's hit-box.
+           [diameter 50]
+           [radius (/ diameter 2)] ;The radius of the object's hit-box.
            [mid-xpos (+ xpos radius)]
            [mid-ypos (+ ypos radius)]
            [tip-xpos (- mid-xpos (* radius (sin angle)))]
@@ -24,7 +25,7 @@
            [dx 0] ;The ship's speed in the x-direction.
            [dy 0] ;The ship's speed in the y-direction.
            [speed 0] ;The velocity.
-           [image (make-bitmap 100 100)] ;A bitmap to draw the ship in.
+           [image (make-bitmap diameter diameter)] ;A bitmap to draw the ship in.
            [points 0] ;The number of points the object is worth.
            [score 0] ;The player's score.
            [name (gensym "ship")]) ;;Gives the ship a unique name
@@ -72,17 +73,17 @@
         (send dc set-brush "black" 'solid)
         (send dc set-pen "white" 1 'solid)
         (send dc draw-line
-              50 0
-              0 100)
+              radius 0
+              0 diameter)
         (send dc draw-line
-              50 0
-              100 100)
+              radius 0
+              diameter diameter)
         (send dc draw-line
-              0 100
-              50 75)
+              0 diameter
+              radius (- diameter (/ radius 2)))
         (send dc draw-line
-              100 100
-              50 75)))
+              diameter diameter
+              radius (- diameter (/ radius 2)))))
     
     (define/public (get-mid-xpos)
       mid-xpos)

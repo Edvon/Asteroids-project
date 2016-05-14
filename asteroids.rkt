@@ -12,7 +12,7 @@
   (class object%
     (init-field [xpos (random 1920)] ;; The asteroid's current x-coordinate. Is updated whenever the screen in refreshed.
                 [ypos (random 1080)] ;; The asteroid's current y-coordinate. Is updated whenever the screen in refreshed.
-                [diameter 200] ;; The diameter of the circle representing the asteroid.
+                [diameter 150] ;; The diameter of the circle representing the asteroid.
                 [points 50]
                 [name (gensym "asteroid")]) ;; A randomly generated name.
     
@@ -93,7 +93,7 @@
     ;; We make the new asteroid smaller and weaker.
     (super-new [xpos mxpos]
                [ypos mypos]
-               [diameter 100]
+               [diameter 75]
                [points 75]
                [name (gensym "medium-asteroid")])
     
@@ -121,7 +121,7 @@
                 [sypos 0])
     (super-new [xpos sxpos]
                [ypos sypos]
-               [diameter 50]
+               [diameter 25]
                [points 150]
                [name (gensym "small-asteroid")])
     

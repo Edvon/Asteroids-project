@@ -14,19 +14,21 @@
            [ypos 800] 
            [dx ((eval (random-ref '(+ -))) (random 1 5))]
            [points 200]
-           [radius 75]
+           [width 90]
+           [height 50]
+           [radius 50]
            [mid-xpos (+ xpos radius)]
            [mid-ypos (+ ypos radius)]
-           [image (make-bitmap 150 150)]
+           [image (make-bitmap width (+ height 1))]
            [name (gensym "ufo")])
     
     (super-new)
     
     (hash-set! ufo-hash name this)
-
+    
     (define/public (get-mid-xpos)
       mid-xpos)
-
+    
     (define/public (get-mid-ypos)
       mid-ypos)
     
@@ -90,8 +92,46 @@
       (let ([dc (new bitmap-dc% [bitmap bitmap-target])])
         (send dc set-brush "black" 'solid)
         (send dc set-pen "white" 1 'solid)
-        (send dc draw-ellipse 0 0 150 150)
-        (send dc draw-ellipse 50 50 50 50)))
+        
+        (send dc draw-line
+              0 (* (/ 2 3) height)
+              width (* (/ 2 3) height))
+        
+        (send dc draw-line
+              0 (* (/ 2 3) height)
+              (/ width 3) (/ height 3))
+        
+        (send dc draw-line
+              width (* (/ 2 3) height)
+              (- width (/ width 3)) (/ height 3))
+        
+        (send dc draw-line
+              (/ width 3) (/ height 3)
+              (- width (/ width 3)) (/ height 3))
+        
+        (send dc draw-line
+              (/ width 3) (/ height 3)
+              (+ (/ width 3) (/ width 12)) 0)
+        
+        (send dc draw-line
+              (- width (/ width 3)) (/ height 3)
+              (- width (/ width 3) (/ width 12)) 0)
+        
+        (send dc draw-line
+              (+ (/ width 3) (/ width 12)) 0
+              (- width (/ width 3) (/ width 12)) 0)
+        
+        (send dc draw-line
+              0 (* (/ 2 3) height)
+              (/ width 3) height)
+        
+        (send dc draw-line
+              width (* (/ 2 3) height)
+              (- width (/ width 3)) height)
+        
+        (send dc draw-line
+              (/ width 3) height
+              (- width (/ width 3)) height)))
     
     (create-ufo-image image)
     

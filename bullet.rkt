@@ -15,10 +15,12 @@
      [dy 0])
     
     (field [health 2]
-           [radius 5]
+           [diameter 8]
+           [points 0]
+           [radius (/ diameter 2)]
            [mid-xpos (+ xpos radius)]
            [mid-ypos (+ ypos radius)]
-           [image (make-bitmap 10 10)])
+           [image (make-bitmap diameter diameter)])
     
     (super-new)
     
@@ -47,7 +49,7 @@
       (let ((dc (new bitmap-dc% [bitmap bitmap-target])))
         (send dc set-pen "white" 1 'solid)
         (send dc set-brush "black" 'solid)
-        (send dc draw-ellipse 0 0 10 10)))
+        (send dc draw-ellipse 0 0 diameter diameter)))
     
     (create-bullet-image image)
     
