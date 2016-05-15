@@ -45,7 +45,7 @@
         (send creator update-score (get-field points obj)))
       (destroy name))
     
-    (define/public (create-bullet-image bitmap-target)
+    (define/private (create-bullet-image bitmap-target)
       (let ((dc (new bitmap-dc% [bitmap bitmap-target])))
         (send dc set-pen "white" 1 'solid)
         (send dc set-brush "black" 'solid)

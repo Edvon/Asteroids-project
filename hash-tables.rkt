@@ -10,12 +10,22 @@
 ;; because they're mutable, and it turns out to be rather convenient.
 (define asteroids-hash (make-hash))
 
-(define score 0)
-
-(define (update-score amt)
-  (set! score (+ score amt)))
-
 (define bullets-hash (make-hash))
 
 (define ufo-hash (make-hash))
+
+(define level-completed? #f)
+
+(define (level-completed! val)
+  (set! level-completed? val))
+
+(define game-over? #f)
+
+(define (game-over!)
+  (set! game-over? #t))
+
+(define level 1)
+
+(define (update-level!)
+  (set! level (+ level 1)))
 

@@ -3,6 +3,8 @@
 (provide game%)
 (require "hash-tables.rkt")
 
+(hash-set! key-hash 'escape #f)
+
 ;; game% is a class which handles the game's
 ;; physics, logic and drawing.
 (define game%
@@ -23,8 +25,8 @@
           [(> ypos 1080) (send obj set-mid-y! 0)]
           [(< ypos 0) (send obj set-mid-y! 1080)])))
     
-    (define/public (key-handler key-code stat)
-      (hash-set! key-hash key-code stat))
+    (define/public (key-handler key-code val)
+      (hash-set! key-hash key-code val))
     
     ;;checks if two objects are closer to eachother than allowed
     (define (collision? obj-1 obj-2)
@@ -34,6 +36,7 @@
             [mid-xpos-2 (send obj-2 get-mid-xpos)]
             [mid-ypos-1 (send obj-1 get-mid-ypos)]
             [mid-ypos-2 (send obj-2 get-mid-ypos)])
+        
         (<= (sqrt (+ (sqr (- mid-xpos-1 mid-xpos-2))
                      (sqr (- mid-ypos-1 mid-ypos-2))))
             (+ radius-1 radius-2))))
@@ -43,18 +46,21 @@
       (define xpos 10)
       (for-each (lambda (ship)
                   (let ([score (number->string (send ship get-score))]
-                        [lives (number->string (send ship get-lives))])
-                    (send dc draw-text (string-append "Score " score) xpos 10)
-                    (send dc draw-text (string-append "Lives " lives) xpos 30)
+                        [lives (number->string (send ship get-lives))]
+                        [level (number->string level)])
+                    (send dc draw-text (string-append "Level: " level) xpos 10)
+                    (send dc draw-text (string-append "Score: " score) xpos 30)
+                    (send dc draw-text (string-append "Lives: " lives) xpos 50)
                     (set! xpos (+ xpos 200))))
                 (hash-values ship-hash)))
     
     (define (end-of-level dc)
-      (when (or (hash-empty? ship-hash)
-                (hash-empty? asteroids-hash))
-        (send dc set-text-foreground "white")
+      (send dc set-text-foreground "white")
+      (when (hash-empty? ship-hash)
         (send dc draw-text "Game over!" 920 540)
-        (send (new timer% [notify-callback exit]) start 3000)))
+        (send (new timer% [notify-callback game-over!]) start 5000))
+      (when (hash-empty? asteroids-hash)
+        (level-completed! #t)))
     
     ;; The acctual rendering method. Is called by the on-paint method
     ;; provided by the game-canvas% class. render just calls the update methods

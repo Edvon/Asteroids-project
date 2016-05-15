@@ -37,7 +37,7 @@
       image)
     
     ;; A method which draws the asteroid on the bitmap.
-    (define/public (create-asteroid-image bitmap-target)
+    (define/private (create-asteroid-image bitmap-target)
       (let ([dc (new bitmap-dc% [bitmap bitmap-target])])
         (send dc set-brush "black" 'solid)
         (send dc set-pen "white" 1 'solid)
@@ -93,7 +93,7 @@
     ;; We make the new asteroid smaller and weaker.
     (super-new [xpos mxpos]
                [ypos mypos]
-               [diameter 75]
+               [diameter 85]
                [points 75]
                [name (gensym "medium-asteroid")])
     
@@ -121,7 +121,7 @@
                 [sypos 0])
     (super-new [xpos sxpos]
                [ypos sypos]
-               [diameter 25]
+               [diameter 45]
                [points 150]
                [name (gensym "small-asteroid")])
     

@@ -17,9 +17,10 @@
            [width 90]
            [height 50]
            [radius 50]
-           [mid-xpos (+ xpos radius)]
-           [mid-ypos (+ ypos radius)]
+           [mid-xpos (+ xpos (/ width 2))]
+           [mid-ypos (+ ypos (/ height 2))]
            [image (make-bitmap width (+ height 1))]
+           [ufo-level level]
            [name (gensym "ufo")])
     
     (super-new)
@@ -59,10 +60,10 @@
              [target-x (send target get-mid-xpos)]
              [target-y (send target get-mid-ypos)]
              [target-angle (atan (/ (- target-y mid-ypos) (- target-x mid-xpos)))]
-             [offset-x (* 75 (cos target-angle))]
-             [offset-y (* 75 (sin target-angle))]
-             [bullet-dx (* 25 (cos target-angle))]
-             [bullet-dy (* 25 (sin target-angle))]
+             [offset-x (* 45 (cos target-angle))]
+             [offset-y (* 45 (sin target-angle))]
+             [bullet-dx (* 20 (cos target-angle))]
+             [bullet-dy (* 20 (sin target-angle))]
              [sign -])
         
         (when (> target-x mid-xpos)
@@ -88,7 +89,7 @@
       (send *ufo-fire-timer* stop)
       (hash-remove! ufo-hash name))
     
-    (define/public (create-ufo-image bitmap-target)
+    (define/private (create-ufo-image bitmap-target)
       (let ([dc (new bitmap-dc% [bitmap bitmap-target])])
         (send dc set-brush "black" 'solid)
         (send dc set-pen "white" 1 'solid)

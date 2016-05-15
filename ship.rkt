@@ -9,7 +9,7 @@
 (define ship%
   (class object%
     (init-field [id 1] ;;The identification-number för the ship
-                [keys (list #\w #\a #\d #\space)])
+                [keys (list #\w #\a #\d #\space 'shift)])
     
     
     (field [lives 3] ;When the ship is out of lives it should be removed.
@@ -26,7 +26,7 @@
            [dy 0] ;The ship's speed in the y-direction.
            [speed 0] ;The velocity.
            [image (make-bitmap diameter diameter)] ;A bitmap to draw the ship in.
-           [points 0] ;The number of points the object is worth.
+           [points 300] ;The number of points the object is worth.
            [score 0] ;The player's score.
            [name (gensym "ship")]) ;;Gives the ship a unique name
     
@@ -57,7 +57,9 @@
       (let ([orig-radius radius])
         (set! radius -100)
         (send (new timer% [notify-callback (lambda ()
-                                             (set! radius orig-radius))]) start 200)
+                                             (set! radius orig-radius))]) start 500)
+        (set! xpos 920)
+        (set! ypos 540)
         (if (= 0 lives)
             (destroy name)
             (set! lives (- lives 1)))))
@@ -102,22 +104,22 @@
     ;; forward increases the speed of the ship unless it's already moving
     ;; at the maximum speed.
     (define/private (accelerate)
-      (if (>= speed 1)
+      (if (>= speed 0.5)
           (begin
-            (set! speed 1)
+            (set! speed 0.5)
             (set! dy (- dy (* speed (cos angle))))
             (set! dx (- dx (* speed (sin angle)))))
           (begin
-            (set! speed (+ speed 0.08))
+            (set! speed (+ speed 0.02))
             (set! dy (- dy (* speed (cos angle))))
             (set! dx (- dx (* speed (sin angle)))))))
     
     ;; Turn-left and turn-right changes the direction in wich the ship is moving.
     (define/private (turn-left)
-      (set! angle (+ angle 0.1)))
+      (set! angle (+ angle 0.085)))
     
     (define/private (turn-right)
-      (set! angle (- angle 0.1)))
+      (set! angle (- angle 0.085)))
     
     ;; create instances of the bullet%
     ;; class when the ship fires, add these to a hash table and then update
@@ -131,8 +133,12 @@
                      bullet-name
                      tip-xpos
                      tip-ypos
-                     (- (* 25 (sin angle)))
-                     (- (* 25 (cos angle)))))))
+                     (- (* 20 (sin angle)))
+                     (- (* 20 (cos angle)))))))
+    
+    (define/private (hyperdrive)
+      (set! xpos (random 1920))
+      (set! ypos (random 1080)))
     
     ;; function wich controls the input and if they are correct runs the
     ;; different move-functions.
@@ -145,7 +151,10 @@
         (turn-right))
       (when (hash-ref key-hash (fourth keys))
         (fire)
-        (hash-set! key-hash (fourth keys) #f)))
+        (hash-set! key-hash (fourth keys) #f))
+      (when (hash-ref key-hash (fifth keys))
+        (hyperdrive)
+        (hash-set! key-hash (fifth keys) #f)))
     
     
     ;; update-ship uses parameters provided by the
@@ -172,8 +181,8 @@
         (set! mid-ypos (+ ypos radius))
         (set! tip-xpos (- mid-xpos (* radius (sin angle))))
         (set! tip-ypos (- mid-ypos (* radius (cos angle))))
-        (set! dx (* dx 0.97))
-        (set! dy (* dy 0.97))
+        (set! dx (* dx 0.98))
+        (set! dy (* dy 0.98))
         
         ;;steer
         (steer)))
