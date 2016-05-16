@@ -1,1 +1,0 @@
-("6.4" ("83a21721ff9682b3748478b9c72222c81455983d" . "ef7eae0174bc838052d45f4d58b5fd0466cbfcb5") #"C:\\Users\\Oscar\\Documents\\GitHub\\Asteroids-project\\hash-tables.rkt" (collects #"errortrace" #"errortrace-key.rkt") (collects #"racket" #"gui.rkt") (collects #"racket" #"main.rkt") (collects #"racket" #"random.rkt") (collects #"racket" #"runtime-config.rkt"))

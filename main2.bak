@@ -1,3 +1,0 @@
-#lang racket
-(require racket/gui)
-(require "main.rkt)
