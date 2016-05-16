@@ -10,10 +10,10 @@
 ;; at random locations, thus all the use of the random procedure.
 (define asteroid%
   (class object%
-    (init-field [xpos (random 1920)] ;; The asteroid's current x-coordinate. Is updated whenever the screen in refreshed.
-                [ypos (random 1080)] ;; The asteroid's current y-coordinate. Is updated whenever the screen in refreshed.
+    (init-field [xpos (random 1920)] ;; The asteroid's current x-coordinate.
+                [ypos (random 1080)] ;; The asteroid's current y-coordinate.
                 [diameter 150] ;; The diameter of the circle representing the asteroid.
-                [points 50]
+                [points 50] 
                 [name (gensym "asteroid")]) ;; A randomly generated name.
     
     
@@ -32,51 +32,112 @@
     ;; Method for generating a bitmap.
     (define image (make-bitmap diameter diameter))
     
-    ;; Method which provides us with the bitmap containing the asteroid.
+
+    ;; METHOD: get-image
+    ;;
+    ;; DESCRIPTION: A method which returns the bitmap of the asteroid object.
+    ;;
+    ;; INPUT: None.
+    ;;
+    ;; OUTPUT: image - a bitmap object.
     (define/public (get-image)
       image)
     
-    ;; A method which draws the asteroid on the bitmap.
+    
+    ;; METHOD: create-asteroid-image
+    ;;
+    ;; DESCRIPTION: A method which draws a circle on a bitmap object,
+    ;;              bitmap-target.
+    ;;
+    ;; INPUT: bitmap-target - a bitmap object.
+    ;;
+    ;; OUTPUT: #<void>
     (define/private (create-asteroid-image bitmap-target)
       (let ([dc (new bitmap-dc% [bitmap bitmap-target])])
         (send dc set-brush "black" 'solid)
         (send dc set-pen "white" 1 'solid)
         (send dc draw-ellipse 0 0 diameter diameter)))
     
-    ;;makes us able to use the middle of the bitmap for the object.
+    
+    ;; METHOD: get-mid-xpos
+    ;;
+    ;; DESCRIPTION: Method which returns the x-coordinate
+    ;;              of the center of the asteroid object.
+    ;;
+    ;; INPUT: None.
+    ;;
+    ;; OUTPUT: mid-xpos - the integer coordinate.
     (define/public (get-mid-xpos)
       mid-xpos)
     
+    
+    ;; METHOD: get-mid-ypos
+    ;;
+    ;; DESCRIPTION: Method which returns the y-coordinate
+    ;;              of the center of the asteroid object.
+    ;;
+    ;; INPUT: None.
+    ;;
+    ;; OUTPUT: mid-ypos - the integer coordinate.
     (define/public (get-mid-ypos)
       mid-ypos)
-    
+
+
+    ;; METHOD: set-mid-x!
+    ;;
+    ;; DESCRIPTION: Method which sets xpos, the x-coordinate of the center of
+    ;;              the asteroid object, to a new value, new-mid-x.
+    ;;
+    ;; INPUT: new-mid-x - an integer.
+    ;;
+    ;; OUTPUT: #<void>
     (define/public (set-mid-x! new-mid-x)
       (set! xpos (- new-mid-x radius)))
-    
+
+
+    ;; METHOD: set-mid-x!
+    ;;
+    ;; DESCRIPTION: Method which sets ypos, the x-coordinate of the center of
+    ;;              the asteroid object, to a new value, new-mid-x.
+    ;;
+    ;; INPUT: new-mid-x - an integer.
+    ;;
+    ;; OUTPUT: #<void>
     (define/public (set-mid-y! new-mid-y)
       (set! ypos (- new-mid-y radius)))
     
     (define/public (obj-has-collided-with obj)
-      (destroy name))
+      (destroy! name))
     
-    ;; A method for destroying an asteroid and at the same time creating 2 new, smaller asteroids.
-    ;; This creates the illusion, kind of, of the asteroid breaking into pieces.
-    ;; We create the new asteroids in the vicinty of where the old asteroid was destroyed.
-    (define/public (destroy name)
+    
+    ;; METHOD: destroy!
+    ;;
+    ;; DESCRIPTION: A method for destroying an asteroid and at the same time
+    ;;              creating two new, smaller asteroids in the vicinty of where
+    ;;              the old asteroid was destroyed. This creates the illusion
+    ;;              of the asteroid breaking into pieces.
+    ;;
+    ;; INPUT: name - a string which serves as the key of the asteroid object in
+    ;;        the hash table asteroids-hash.
+    ;;
+    ;; OUTPUT: #<void>
+    (define/public (destroy! name)
       (for ([i 2])
         (make-object medium-asteroid% (+ xpos (* 20 i)) (+ ypos (* 20 i))))
       (hash-remove! asteroids-hash name))
     
     
-    ;; update-asteroids uses parameters provided by
-    ;; asteroid objects, which are stored in the asteroid-hash,
-    ;; calculates the asteroids' new positions and draws them.
-    (define/public (update dc)
-      
-      ;; Drawing
+    ;; METHOD: update
+    ;;
+    ;; DESCRIPTION: Draws a bitmap objet, image, on a drawing context at the
+    ;;              (xpos ypos) location and then calculates new values for
+    ;;              xpos, ypos, mid-xpos and mid-ypos.
+    ;;
+    ;; INPUT: dc - a drawing-context.
+    ;;
+    ;; OUTPUT: #<void>
+    (define/public (update! dc)
       (send dc draw-bitmap image xpos ypos)
-      
-      ;; Physics
       (set! xpos (+ xpos dx))
       (set! ypos (+ ypos dy))
       (set! mid-xpos (+ xpos radius))
@@ -109,7 +170,7 @@
     ;; create 3 even smaller asteroids. We supply the make-object call
     ;; with our inherited coordinates to, just as before, create the new asteroids
     ; close to where the old one disappeared.
-    (define/override (destroy name)
+    (define/override (destroy! name)
       (for ([i 2])
         (make-object small-asteroid% (+ new-xpos (* 10 i)) (+ new-ypos (* 10 i))))
       (hash-remove! asteroids-hash name))))
