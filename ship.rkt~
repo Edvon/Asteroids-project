@@ -9,7 +9,7 @@
 (define ship%
   (class object%
     (init-field [id 1] ;;The identification-number för the ship
-                [keys (list #\w #\a #\d #\space 'shift 'esc)])
+                [keys (list #\w #\a #\d #\space 'shift)])
     
     
     (field [lives 3] ;When the ship is out of lives it should be removed.
@@ -150,11 +150,11 @@
       (when (hash-ref key-hash (third keys))
         (turn-right))
       (when (hash-ref key-hash (fourth keys))
-        (fire))
+        (fire)
+        (hash-set! key-hash (fourth keys) #f))
       (when (hash-ref key-hash (fifth keys))
         (hyperdrive)
         (hash-set! key-hash (fifth keys) #f)))
-      
     
     
     ;; update-ship uses parameters provided by the
