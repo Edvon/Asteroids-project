@@ -31,10 +31,12 @@
            [image (make-bitmap diameter diameter)] ;; Image of the ship.
            [points 300] ;; Number of points the object is worth.
            [score 0] ;; Player's score.
-           [name (gensym "ship")]) ;; Gives the ship a unique name.
+           [name (gensym "ship")] ;; Gives the ship a unique name.
+           [fire-cooldown 0]) ;; Cooldown for fire procedure.
+    
     
     (super-new)
-
+    
     (create-ship-image image)
     
     
@@ -78,7 +80,7 @@
     ;; Method wich provides the number of remaining lives.
     (define/public (get-lives)
       lives)
-
+    
     ;; Method: obj-has-collided-with
     ;;
     ;; DESCRIPTION: Changes the radius and therefore the hitbox of the ship
@@ -133,7 +135,7 @@
         (send dc draw-line
               diameter diameter
               radius (- diameter (/ radius 2)))))
-
+    
     ;; METHOD: get-mid-x and get-mid-y
     ;;
     ;; DESCRIPTION: Provides the middle position of the ship.
@@ -145,7 +147,7 @@
       mid-xpos) 
     (define/public (get-mid-ypos)
       mid-ypos)
-
+    
     ;; METHOD: set-mid-x! and set-mid-y!
     ;;
     ;; DESCRIPTION: Lets us set the position depending on the middle position.
@@ -159,7 +161,7 @@
       (set! ypos (- new-mid-y radius)))
     
     ;; ------------- Move functions --------------
-
+    
     ;; METHOD: accelerate
     ;;
     ;; DESCRIPTION: Increases the speed of the ship unless it's already moving
@@ -190,7 +192,7 @@
       (set! angle (+ angle 0.085)))   
     (define/private (turn-right)
       (set! angle (- angle 0.085)))
-
+    
     ;; METHOD: fire
     ;;
     ;; DESCRIPTION: Fires a bullet from the ship by creating instances
@@ -201,16 +203,18 @@
     ;; OUTPUT: #<void>
     (define/private (fire)
       (let ([bullet-name (gensym "bullet")])
-        (hash-set! bullets-hash bullet-name
-                   (make-object bullet%
-                     this
-                     id
-                     bullet-name
-                     tip-xpos
-                     tip-ypos
-                     (- (* 20 (sin angle)))
-                     (- (* 20 (cos angle)))))))
-
+        (when (= fire-cooldown 0)
+          (set! fire-cooldown 10)
+          (hash-set! bullets-hash bullet-name
+                     (make-object bullet%
+                       this
+                       id
+                       bullet-name
+                       tip-xpos
+                       tip-ypos
+                       (- (* 20 (sin angle)))
+                       (- (* 20 (cos angle))))))))
+    
     ;; METHOD: hyperdrive
     ;;
     ;; DESCRIPTION: Sets the position of the ship to a random position on the
@@ -222,7 +226,7 @@
     (define/private (hyperdrive)
       (set! xpos (random 1920))
       (set! ypos (random 1080)))
-
+    
     ;; METHOD: steer
     ;;
     ;; DESCRIPTION: Controls the input and if they are correct runs the
@@ -243,7 +247,7 @@
       (when (hash-ref key-hash (fifth keys))
         (hyperdrive)
         (hash-set! key-hash (fifth keys) #f)))
-      
+    
     
     
     ;; METHOD: update-ship
@@ -272,5 +276,7 @@
         (set! tip-ypos (- mid-ypos (* radius (cos angle))))
         (set! dx (* dx 0.98))
         (set! dy (* dy 0.98))
+        (when (> fire-cooldown 0)
+          (set! fire-cooldown (- fire-cooldown 1)))
         (steer)))))
 
