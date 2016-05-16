@@ -144,7 +144,7 @@
     ;;
     ;; OUTPUT: #<void>
     (define/public (obj-has-collided-with obj)
-      (destroy name))
+      (destroy! name))
     
     
     ;; METHOD : destroy
