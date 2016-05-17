@@ -140,13 +140,12 @@
                          (send *game-physics* render dc)
                          (on-level-over))]
        
-       [keyboard-handler
-        (lambda (key-event)
-          (let ([key-code (send key-event get-key-code)]
-                [key-release-code (send key-event get-key-release-code)])
-            (if (equal? key-code 'release)
-                (send *game-physics* key-handler key-release-code #f)
-                (send *game-physics* key-handler key-code #t))))]))
+       [keyboard-handler (lambda (key-event)
+                           (let ([key-code (send key-event get-key-code)]
+                                 [key-release-code (send key-event get-key-release-code)])
+                             (if (equal? key-code 'release)
+                                 (send *game-physics* key-handler key-release-code #f)
+                                 (send *game-physics* key-handler key-code #t))))]))
 
 
 ;; Define a timer which on every callback refreshes the canvas.
@@ -159,8 +158,7 @@
 ;; showing the window and then starting the timer so we can refresh the canvas.
 (define (start-game)
   (init-level level)
-  (send *asteroids-game-canvas* set-canvas-background
-        (send the-color-database find-color "black"))
+  (send *asteroids-game-canvas* set-canvas-background (send the-color-database find-color "black"))
   (send *asteroids-window* show #t)
   (send *game-timer* start 50)
   (send *asteroids-game-canvas* focus))

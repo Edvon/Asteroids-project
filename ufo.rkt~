@@ -107,13 +107,11 @@
     ;; INPUT: None.
     ;;
     ;; OUTPUt: #<void>
-    (define/public (fire)
+    (define/public(fire)
       (let* ([bullet-name (gensym "bullet")]
-             [precision (/ 200 (* 2 level))]
-             [random-sign (if (> 1 (random 2)) - +)]
              [target (random-ref (hash-values ship-hash))]
-             [target-x (random-sign (send target get-mid-xpos) precision)]
-             [target-y (random-sign (send target get-mid-ypos) precision)]
+             [target-x (send target get-mid-xpos)]
+             [target-y (send target get-mid-ypos)]
              [target-angle (atan (/ (- target-y mid-ypos) (- target-x mid-xpos)))]
              [offset-x (* 45 (cos target-angle))]
              [offset-y (* 45 (sin target-angle))]

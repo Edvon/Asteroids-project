@@ -111,12 +111,10 @@
     ;; INPUT: dc - a drawing context.
     ;;
     ;; OUTPUT: #<void>
-    (define (end-of-level dc) 
+    (define (end-of-level dc)
       (send dc set-text-foreground "white")
       (when (hash-empty? ship-hash)
         (send dc draw-text "Game over!" 920 540)
-        (send dc draw-text (string-append "level: " (number->string level))
-              920 600) 
         (send (new timer% [notify-callback game-over!]) start 5000))
       (when (hash-empty? asteroids-hash)
         (level-completed! #t)))
