@@ -1,12 +1,18 @@
 #lang racket
 (require racket/gui)
-(require "hash-tables.rkt")
+(require "utilities.rkt")
 (require "ship.rkt")
 (require "ufo.rkt")
 (require "asteroids.rkt")
 
 
-;;------------------------Menue---------------------
+;; PURPOSE:
+;;
+;; LAST MODIFIED: 
+;;
+;; AUTHORS: Oscar Göransson and Edvin Ljungstrand.
+
+;;-------------------- Menue ---------------------
 
 ;; Creates an instance of the frame% class, *menue-window*,
 ;; on wich we can put panels to put buttons and canvases in.
@@ -61,7 +67,8 @@
        [label "2 players"]
        [callback (lambda (button event)
                    (define *player-2*
-                     (make-object ship% "Player 2" '(#\i #\j #\l #\return #\backspace )))
+                     (make-object ship%
+                       "Player 2" '(#\i #\j #\l #\return #\backspace )))
                    (define *player-1*
                      (make-object ship%))
                    (start)
@@ -74,7 +81,7 @@
        [callback (lambda (button event)
                    (exit))]))
 
-;;------------------------Game----------------------
+;;----------------------- Game --------------------------
 
 ;; Define a timer which will control when
 ;; ufos appear.
@@ -190,7 +197,7 @@
 
 ;;--------------------- Game-start-functions --------------------------
 
-;; Define a procedure for initializing and starting the game. It does this by
+;; Define a procedure for initializing and starting the game. It does so by
 ;; showing the window and then starting the timer so we can refresh the canvas.
 (define (start)
   (init-level level)

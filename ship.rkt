@@ -2,7 +2,7 @@
 (require racket/gui)
 (provide ship%)
 (require "bullet.rkt")
-(require "hash-tables.rkt")
+(require "utilities.rkt")
 
 ;; Purpose: ship% contains information for creating and handling
 ;; the input to ships.
@@ -13,28 +13,52 @@
 
 (define ship%
   (class object%
+    
+    
+    ;;[field]         [comment]
+    
+    ;;[name]          [name of the ship]
+    ;;[keys]          [Key-bindings.]
+    ;;[id])           [Id of the ship.] 
+
+    ;;[lives]         [Ships lives.]
+    ;;[xpos]          [X-position for the ship.]
+    ;;[ypos]          [y-position for the ship.]
+    ;;[angle]         [Angle at which the ship is turned.]
+    ;;[diameter]      [Diameter of the ship.]
+    ;;[radius]        [Radius of the ship.]
+    ;;[mid-xpos]      [X-pos for middle of ship.]
+    ;;[mid-ypos]      [Y-pos for middle of ship.]
+    ;;[tip-xpos]      [X-pos for ships tip.]
+    ;;[tip-ypos]      [Y-pos for ships tip.]
+    ;;[dx]            [Ship's speed in x-direction.]
+    ;;[dy]            [Ship's speed in y-direction.]
+    ;;[speed]         [Ship's velocity.]
+    ;;[image]         [Image of the ship.]
+    ;;[points]        [Number of points the object is worth.]
+    ;;[score]         [Player's score.]
+    ;;[fire-cooldown] [Cooldown for fire procedure.]
+    
     (init-field [name "Player 1"]
-                [keys (list #\w #\a #\d #\space 'shift)] ;; Key-bindings.
-                [id 1]) ;; Id of the ship. 
-                
-    (field [lives 3] ;; Ships lives.
-           [xpos (random 1920)] ;; X-position fo the ship.
-           [ypos (random 1080)] ;; y-position fo the ship.
-           [angle 0] ;; Angle at which the ship is turned.
-           [diameter 50] ;; Diameter of the ship.
-           [radius (/ diameter 2)] ;; Radius of the ship.
-           [mid-xpos (+ xpos radius)] ;; X-pos for ships middle
-           [mid-ypos (+ ypos radius)] ;; Y-pos for ships middle
-           [tip-xpos (- mid-xpos (* radius (sin angle)))] ;;X-pos for ships tip.
-           [tip-ypos (- mid-ypos (* radius (cos angle)))] ;;Y-pos for ships tip.
-           [dx 0] ;; Ship's speed in x-direction.
-           [dy 0] ;; Ship's speed in y-direction.
-           [speed 0] ;; Ship's velocity.
-           [image (make-bitmap diameter diameter)] ;; Image of the ship.
-           [points 300] ;; Number of points the object is worth.
-           [score 0] ;; Player's score.
-           ;[name (gensym "ship")] ;; Gives the ship a unique name.
-           [fire-cooldown 0]) ;; Cooldown for fire procedure.
+                [keys (list #\w #\a #\d #\space 'shift)]
+                [id 1])               
+    (field [lives 3] 
+           [xpos (random 1920)] 
+           [ypos (random 1080)] 
+           [angle 0] 
+           [diameter 50] 
+           [radius (/ diameter 2)] 
+           [mid-xpos (+ xpos radius)] 
+           [mid-ypos (+ ypos radius)]
+           [tip-xpos (- mid-xpos (* radius (sin angle)))] 
+           [tip-ypos (- mid-ypos (* radius (cos angle)))] 
+           [dx 0] 
+           [dy 0] 
+           [speed 0] 
+           [image (make-bitmap diameter diameter)] 
+           [points 300] 
+           [score 0] 
+           [fire-cooldown 0]) 
     
     
     (super-new)
@@ -112,6 +136,7 @@
     ;;
     ;; OUTPUT: #<void>
     (define (destroy! name)
+      (hash-set! dead-ship-hash name this)
       (hash-remove! ship-hash name))
     
     ;; METHOD: create-ship-image
