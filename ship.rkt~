@@ -13,10 +13,8 @@
 
 (define ship%
   (class object%
-    (init-field [name "Player 1"]
-                [keys (list #\w #\a #\d #\space 'shift)] ;; Key-bindings.
-                [id 1]) ;; Id of the ship. 
-                
+    (init-field [id 1] ;; Id of the bullet. 
+                [keys (list #\w #\a #\d #\space 'shift 'esc)]) ;; Key-bindings.
     (field [lives 3] ;; Ships lives.
            [xpos (random 1920)] ;; X-position fo the ship.
            [ypos (random 1080)] ;; y-position fo the ship.
@@ -33,7 +31,7 @@
            [image (make-bitmap diameter diameter)] ;; Image of the ship.
            [points 300] ;; Number of points the object is worth.
            [score 0] ;; Player's score.
-           ;[name (gensym "ship")] ;; Gives the ship a unique name.
+           [name (gensym "ship")] ;; Gives the ship a unique name.
            [fire-cooldown 0]) ;; Cooldown for fire procedure.
     
     

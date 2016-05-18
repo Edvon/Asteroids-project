@@ -14,15 +14,15 @@
                 [ypos (random 1080)] ;; The asteroid's current y-coordinate.
                 [diameter 150] ;; The diameter of the circle representing the asteroid.
                 [points 50] 
-                [name (gensym "asteroid")] ;; A randomly generated name.
-                [dx ((eval (random-ref '(+ -))) (random 1 3))] ;; The asteroid's speed in the x-direction. A number between -4 and 4.
-                [dy ((eval (random-ref '(+ -))) (random 1 3))]) ;; The asteroid's speed in the y-direction. A number between -4 and 4.)
+                [name (gensym "asteroid")]) ;; A randomly generated name.
     
     
     (field [id 4]
            [radius (/ diameter 2)]
            [mid-xpos (+ xpos radius)]
-           [mid-ypos (+ ypos radius)])
+           [mid-ypos (+ ypos radius)]
+           [dx ((eval (random-ref '(+ -))) (random 1 4))] ;; The asteroid's speed in the x-direction. A number between -4 and 4.
+           [dy ((eval (random-ref '(+ -))) (random 1 4))]) ;; The asteroid's speed in the y-direction. A number between -4 and 4.)
     
     (super-new)
     
@@ -145,26 +145,18 @@
     
     (create-asteroid-image image)))
 
-
-
-;;--------------------- Medium-asteroids----------------------
-
-
-
 (define medium-asteroid%
   (class asteroid%
     (init-field [mxpos 0] ;; The x-coordinate on which the asteroid is to be created.
                 [mypos 0]) ;; The y-coordinate on which the asteroid is to be created.
-                
+    
     ;; We create an instance of the asteroid%-class, only changing relevant fields.
     ;; We make the new asteroid smaller and weaker.
     (super-new [xpos mxpos]
                [ypos mypos]
                [diameter 85]
                [points 75]
-               [name (gensym "medium-asteroid")]
-               [dx ((eval (random-ref '(+ -))) (random 2 5))] ;; The asteroid's speed in the x-direction. A number between -4 and 4.
-               [dy ((eval (random-ref '(+ -))) (random 2 5))]) ;; The asteroid's speed in the y-direction. A number between -4 and 4.))
+               [name (gensym "medium-asteroid")])
     
     ;; We inherit xpos and ypos from our new instantiated object
     ;; and assign them to new variable names.
@@ -183,8 +175,6 @@
         (make-object small-asteroid% (+ new-xpos (* 10 i)) (+ new-ypos (* 10 i))))
       (hash-remove! asteroids-hash name))))
 
-
-;; -------------------- Small-asteroid ----------------
 ;; As before, only smaller and weaker...
 (define small-asteroid%
   (class asteroid%
@@ -194,9 +184,7 @@
                [ypos sypos]
                [diameter 45]
                [points 150]
-               [name (gensym "small-asteroid")]
-               [dx ((eval (random-ref '(+ -))) (random 4 7))] ;; The asteroid's speed in the x-direction. A number between -4 and 4.
-               [dy ((eval (random-ref '(+ -))) (random 4 7))]) ;; The asteroid's speed in the y-direction. A number between -4 and 4.))
+               [name (gensym "small-asteroid")])
     
     (define/override-final (update! dc)
       (super update! dc))

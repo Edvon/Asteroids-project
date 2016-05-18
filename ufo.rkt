@@ -9,7 +9,7 @@
 ;;
 ;; LAST MODIFIED:
 ;;
-;; AUTHORS; Oscar Göransson and Edvin Ljungstrand.
+;; AUTHORS: Oscar Göransson and Edvin Ljungstrand.
 
 (define ufo%
   (class object%
@@ -25,7 +25,6 @@
            [mid-xpos (+ xpos (/ width 2))]
            [mid-ypos (+ ypos (/ height 2))]
            [image (make-bitmap width (+ height 1))]
-           [ufo-level level]
            [name (gensym "ufo")])
     
     (super-new)
@@ -109,7 +108,7 @@
     ;; OUTPUt: #<void>
     (define/public (fire)
       (let* ([bullet-name (gensym "bullet")]
-             [precision (/ 200 (* 2 level))]
+             [precision (/ 400  (* 2 level))]
              [random-sign (if (> 1 (random 2)) - +)]
              [target (random-ref (hash-values ship-hash))]
              [target-x (random-sign (send target get-mid-xpos) precision)]

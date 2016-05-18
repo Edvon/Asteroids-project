@@ -14,7 +14,7 @@
 
 (define game%
   (class object%
-
+    
     ;; METHOD: screen-wrap
     ;;
     ;; DESCIPTION: A method used to simulate
@@ -36,7 +36,7 @@
           [(> ypos 1080) (send obj set-mid-y! 0)]
           [(< ypos 0) (send obj set-mid-y! 1080)])))
     
-
+    
     ;; METHOD: key-handler
     ;;
     ;; DESCRIPTION: When the key key-code is pressed/released it's corresponding
@@ -51,7 +51,7 @@
     (define/public (key-handler key-code val)
       (hash-set! key-hash key-code val))
     
-
+    
     ;; METHOD: collision?
     ;;
     ;; DESCRIPTION: A method that checks if the distance between the centers of
@@ -76,7 +76,7 @@
         (<= (sqrt (+ (sqr (- mid-xpos-1 mid-xpos-2))
                      (sqr (- mid-ypos-1 mid-ypos-2))))
             (+ radius-1 radius-2))))
-
+    
     
     ;; METHOD: draw-stats
     ;;
@@ -91,16 +91,17 @@
     (define (draw-stats dc)
       (send dc set-text-foreground "white")
       (define xpos 10)
+      (send dc draw-text (string-append "Level: "
+                                        (number->string level)) 960 10)
       (for-each (lambda (ship)
                   (let ([score (number->string (send ship get-score))]
-                        [lives (number->string (send ship get-lives))]
-                        [level (number->string level)])
-                    (send dc draw-text (string-append "Level: " level) xpos 10)
+                        [lives (number->string (send ship get-lives))])
+                    
                     (send dc draw-text (string-append "Score: " score) xpos 30)
                     (send dc draw-text (string-append "Lives: " lives) xpos 50)
                     (set! xpos (+ xpos 200))))
                 (hash-values ship-hash)))
-
+    
     
     ;; METHOD: end-of-level
     ;;
