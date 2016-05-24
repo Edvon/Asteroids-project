@@ -17,24 +17,24 @@
     
     ;;[field]         [comment]
     
-    ;;[name]          [name of the ship]
+    ;;[name]          [Name of the ship]
     ;;[keys]          [Key-bindings.]
     ;;[id])           [Id of the ship.] 
-
-    ;;[lives]         [Ships lives.]
-    ;;[xpos]          [X-position for the ship.]
-    ;;[ypos]          [y-position for the ship.]
+    
+    ;;[lives]         [Ship's lives.]
+    ;;[xpos]          [The bitmap's x-coordinate.]
+    ;;[ypos]          [The bitmap's y-coordinate.]
     ;;[angle]         [Angle at which the ship is turned.]
-    ;;[diameter]      [Diameter of the ship.]
-    ;;[radius]        [Radius of the ship.]
-    ;;[mid-xpos]      [X-pos for middle of ship.]
-    ;;[mid-ypos]      [Y-pos for middle of ship.]
-    ;;[tip-xpos]      [X-pos for ships tip.]
-    ;;[tip-ypos]      [Y-pos for ships tip.]
-    ;;[dx]            [Ship's speed in x-direction.]
-    ;;[dy]            [Ship's speed in y-direction.]
+    ;;[diameter]      [The height and width of the ship's bitmap.]
+    ;;[radius]        [Diameter / 2]
+    ;;[mid-xpos]      [x-coordinate for the middle of the ship.]
+    ;;[mid-ypos]      [y-coordinate for the middle of the ship.]
+    ;;[tip-xpos]      [x-coordinate for the tip of the ship.]
+    ;;[tip-ypos]      [y-coordinate for tip of the ship.]
+    ;;[dx]            [Ship's speed in the x-direction.]
+    ;;[dy]            [Ship's speed in the y-direction.]
     ;;[speed]         [Ship's velocity.]
-    ;;[image]         [Image of the ship.]
+    ;;[image]         [The ship's bitmap.]
     ;;[points]        [Number of points the object is worth.]
     ;;[score]         [Player's score.]
     ;;[fire-cooldown] [Cooldown for fire procedure.]
@@ -69,51 +69,53 @@
     ;; Adds the ship to the ship-hash
     (hash-set! ship-hash name this)
     
+    ;; Set every element in keys to false in key-hash, since no key is pressed
+    ;; on object creation.
     (for-each (lambda (key)
                 (hash-set! key-hash key #f))
               keys)
     
     ;; METHOD: get-image
     ;;
-    ;; DESCRIPTION: Provides the image of the ship.
+    ;; DESCRIPTION: Provides the field image.
     ;;
     ;; INPUT: none
     ;;
-    ;; OUTPUT: image
+    ;; OUTPUT: image - a bitmap object.
     (define/public (get-image)
       image)
     
     ;; METHOD: get-score
     ;;
-    ;; DESCRIPTION: Provides the score.
+    ;; DESCRIPTION: Provides the field score.
     ;;
     ;; INPUT: none
     ;;
-    ;; OUTPUT: score
+    ;; OUTPUT: score - an integer.
     (define/public (get-score)
       score)
     
     ;; METHOD: update-score
     ;;
-    ;; DESCRIPTION: Adds points the the score of the ship.
+    ;; DESCRIPTION: Adds amnt points the ship's score.
     ;;
-    ;; INPUT: Ammount of points.
+    ;; INPUT: amt - an integer.
     ;;
     ;; OUTPUT: #<void>
-    (define/public (update-score amt)
-      (set! score (+ score amt)))
+    (define/public (update-score amnt)
+      (set! score (+ score amnt)))
     
-    ;; Method wich provides the number of remaining lives.
+    ;; Method which provides the lives field.
     (define/public (get-lives)
       lives)
     
     ;; Method: obj-has-collided-with
     ;;
     ;; DESCRIPTION: Changes the radius and therefore the hitbox of the ship
-    ;; for 0,5s and sets it to a new position. If the ship is out of lives the
-    ;; (destroy!) funktion is called.
+    ;; for 0.5 s and sets it to a new position. If the ship is out of lives the
+    ;; (destroy!) method is called.
     ;;
-    ;; INPUT: a ship object.
+    ;; INPUT: obj -  a ship object.
     ;;
     ;; OUTPUT: #<void>
     (define/public (obj-has-collided-with obj)
@@ -130,9 +132,11 @@
     
     ;; Method: destroy!
     ;;
-    ;; DESCRIPOTION: Destroys the ship.
+    ;; DESCRIPOTION: Destroys the ship by removing it from ship-hash, meaning it
+    ;; won't get updated nor rendered, and adds it to the dead-ship-hash for
+    ;; storing,
     ;;
-    ;; INPUT: Name of ship.
+    ;; INPUT: name - a string.
     ;;
     ;; OUTPUT: #<void>
     (define (destroy! name)
@@ -141,9 +145,9 @@
     
     ;; METHOD: create-ship-image
     ;;
-    ;; DESCRIPTION: A method wich draws a ship on a bitmap object.
+    ;; DESCRIPTION: Draws a ship on the bitmap bitmap-target.
     ;;
-    ;; INPUT: bitmap-target
+    ;; INPUT: bitmap-target - a bitmap object.
     ;;
     ;; OUTPUT: #<void>
     (define/private (create-ship-image bitmap-target)
@@ -163,31 +167,52 @@
               diameter diameter
               radius (- diameter (/ radius 2)))))
     
-    ;; METHOD: get-mid-x and get-mid-y
+    ;; METHOD: get-mid-x
     ;;
-    ;; DESCRIPTION: Provides the middle position of the ship.
+    ;; DESCRIPTION: Provides the x-coordinate of the middle of the ship.
     ;;
     ;; INPUT: none
     ;;
-    ;; OUTPUT: #<void>
+    ;; OUTPUT: mid-xpos - a number (probably a float).
     (define/public (get-mid-xpos)
-      mid-xpos) 
+      mid-xpos)
+    
+    ;; METHOD: get-mid-y
+    ;;
+    ;; DESCRIPTION: Provides the y-coordinate of the middle of the ship.
+    ;;
+    ;; INPUT: none
+    ;;
+    ;; OUTPUT: mid-ypos - a number (probably a float).
     (define/public (get-mid-ypos)
       mid-ypos)
     
-    ;; METHOD: set-mid-x! and set-mid-y!
+    ;; METHOD: set-mid-x!
     ;;
-    ;; DESCRIPTION: Lets us set the position depending on the middle position.
-    ;;
-    ;; INPUT: New position for middle of the ship.
+    ;; DESCRIPTION: When the object has been given a new value for it's mid-xpos
+    ;;              field set-mid-x! calculates and sets a new value for the
+    ;;              xpos field.
+    ;;            
+    ;; INPUT: new-mid-x - a number (probably a float).
     ;;
     ;; OUTPUT: #<void>
     (define/public (set-mid-x! new-mid-x)
-      (set! xpos (- new-mid-x radius)))  
+      (set! xpos (- new-mid-x radius)))
+    
+    ;; METHOD: set-mid-y!
+    ;;
+    ;; DESCRIPTION: When the object has been given a new value for it's mid-ypos
+    ;;              field set-mid-y! calculates and sets a new value for the
+    ;;              ypos field.
+    ;;            
+    ;; INPUT: new-mid-y - a number (probably a float).
+    ;;
+    ;; OUTPUT: #<void>
     (define/public (set-mid-y! new-mid-y)
       (set! ypos (- new-mid-y radius)))
     
-    ;; ------------- Move functions --------------
+    
+    ;; ------------------------------ Move -------------------------------------
     
     ;; METHOD: accelerate
     ;;
@@ -256,8 +281,8 @@
     
     ;; METHOD: steer
     ;;
-    ;; DESCRIPTION: Controls the input and if they are correct runs the
-    ;; different move-functions.
+    ;; DESCRIPTION: Checks if any of the keys in the keys-field have been
+    ;;              pressed and if so calls the appropriate methods.
     ;;
     ;; INPUT: none
     ;;
@@ -275,7 +300,7 @@
         (hyperdrive)
         (hash-set! key-hash (fifth keys) #f)))
     
-    
+    ;; -------------------------------------------------------------------------
     
     ;; METHOD: update-ship
     ;;

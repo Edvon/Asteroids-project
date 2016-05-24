@@ -22,14 +22,15 @@
     ;;[ypos]          [y-position for the ufo.]
     ;;[dx]            [Ufo's speed in x-direction.]
     ;;[points]        [Number of points the object is worth.]
-    ;;[width]         [Width of the ufo]
-    ;;[height]        [Height of the ufo]
-    ;;[radius]        [Radius of the ufo.]
+    ;;[width]         [Width of the ufo's bitmap.]
+    ;;[height]        [Height of the ufo's bitmap.]
+    ;;[radius]        [Radius of a circle describing the ufo's hitbox.]
+    ;;[health]        [The ufo's health.]
     ;;[mid-xpos]      [X-pos for middle of ufo.]
     ;;[mid-ypos]      [Y-pos for middle of ufo.]
     ;;[image]         [Image of the ufo.]
     ;;[[name]         [Name of the ufo.]
-    ;;                      [(gensym "ship") Gives the ship a unique name.)]
+    ;;                [(gensym "ship") Gives the ship a unique name.)]
     
     (field [id 10] 
            [xpos 0] 
@@ -39,6 +40,7 @@
            [width 90]
            [height 50]
            [radius 50]
+           [health 50]
            [mid-xpos (+ xpos (/ width 2))]
            [mid-ypos (+ ypos (/ height 2))]
            [image (make-bitmap width (+ height 1))]
@@ -75,9 +77,10 @@
     
     ;; METHOD: set-mid-x!
     ;;
-    ;; DESCRIPTION: Method which sets xpos, the x-coordinate of the center of
-    ;;              the ufo object, to a new value, new-mid-x.
-    ;;
+    ;; DESCRIPTION: When the object has been given a new value for it's mid-xpos
+    ;;              field set-mid-x! calculates and sets a new value for the
+    ;;              xpos field.
+    ;;            
     ;; INPUT: new-mid-x - an integer.
     ;;
     ;; OUTPUT: #<void>
@@ -87,9 +90,10 @@
     
     ;; METHOD: set-mid-y!
     ;;
-    ;; DESCRIPTION: Method which sets ypos, the y-coordinate of the center of
-    ;;              the ufo object, to a new value, new-mid-y.
-    ;;
+    ;; DESCRIPTION: When the object has been given a new value for it's mid-ypos
+    ;;              field set-mid-y! calculates and sets a new value for the
+    ;;              ypos field.
+    ;;            
     ;; INPUT: new-mid-y - an integer.
     ;;
     ;; OUTPUT: #<void>
@@ -242,8 +246,11 @@
     ;;
     ;; OUTPUT: #<void>
     (define/public (update! dc)
+      (when (< health 1)
+        (destroy! name))
       (send dc draw-bitmap image xpos ypos)
       (set! xpos (+ xpos dx))
       (set! mid-xpos (+ xpos radius))
-      (set! mid-ypos (+ ypos radius)))))
+      (set! mid-ypos (+ ypos radius))
+      (set! health (- health 0.1)))))
 

@@ -2,12 +2,22 @@
 (require racket/gui)
 (provide (all-defined-out))
 
+;; PURPOSE: Utilities is where we store useful tools and hash-tables with
+;; our objects is saved.
+;;
+;; LAST MODIFIED: 16-05-19
+;;
+;; AUTHORS: Oscar Göransson and Edvin Ljungstrand.
+
+;;------------ Hash-tables ------------------
 ;; We use hash tables to store stuff throughout the project
 ;; because they're mutable, and it turns out to be rather convenient.
 
 (define key-hash (make-hash))
 
 (define ship-hash (make-hash))
+
+(define dead-ship-hash (make-hash))
 
 ;; Create a hash table, asteroids-hash, in which all the asteroid-objects
 ;; will be stored.
@@ -18,7 +28,7 @@
 (define ufo-hash (make-hash))
 
 
-;; ------------ Level handeling--------------
+;; ------------ Level handeling --------------
 
 (define level-completed? #f)
 
@@ -30,12 +40,15 @@
 (define (game-over!)
   (set! game-over? #t))
 
+
+;; Level is a global variable to make it possible for functions to read---------------------- måste kommenteras ordentligt!!!!!!!!!!!!
+
 (define level 1)
 
 (define (update-level!)
   (set! level (+ level 1)))
 
-;; ------------- Utilities -----------------
+;; --------------- Utilities -----------------
 
 
 
@@ -132,18 +145,27 @@
 ;;
 ;; DESCRIPTION: A method which determines wether the game is over
 ;;              or if the current level has been completed by checking
-;;              if ship-hash or asteroids-hash is empty.
+;;              if ship-hash or asteroids-hash is empty and draws game stats
+;;              when game is over.
 ;;
 ;; INPUT: dc - a drawing context.
 ;;
 ;; OUTPUT: #<void>
-(define (end-of-level dc) 
+(define (end-of-level dc)
+  (define ypos 600)
   (send dc set-text-foreground "white")
   (when (hash-empty? ship-hash)
-    (send dc draw-text "Game over!" 920 540)
+    (send dc draw-text "Game over!" 900 540)
     (send dc draw-text (string-append "Level " (number->string level))
-          920 600) 
-    (send (new timer% [notify-callback game-over!]) start 5000))
+          915 560)
+    (for-each (lambda (ship)                
+                (let ([name (get-field name ship)]
+                      [score (number->string (send ship get-score))])
+                  (send dc draw-text name 870 ypos)
+                  (send dc draw-text (string-append "Score: " score) 940 ypos)
+                  (set! ypos (+ ypos 20))))
+              (hash-values dead-ship-hash))
+    (send (new timer% [notify-callback game-over!]) start 8000))
   (when (hash-empty? asteroids-hash)
     (level-completed! #t)))
 

@@ -22,12 +22,11 @@
     ;;[diameter]      [Diameter of the asteroid.]
     ;;[points]        [Number of points the object is worth.]
     ;;[name]          [Name of the asteroid.]
-    ;;                     ((gensym "ship") Gives the asteroid a unique name.)
+    ;;                ((gensym "asteroid") Gives the asteroid a unique name.)
     ;;[dx]            [Asteroid's speed in x-direction.]
-    ;;                      (A random number between -4 and 4.)
+    ;;                (A random number between -4 and 4.)
     ;;[dy]            [Asteroid's speed in y-direction.]
-    ;;                      (A random number between -4 and 4.)
-    
+    ;;                (A random number between -4 and 4.)
     ;;[id])           [Id of the asteroid.]  
     ;;[radius]        [Radius of the asteroid.]
     ;;[mid-xpos]      [X-pos for middle of asteroid.]
@@ -108,9 +107,10 @@
 
     ;; METHOD: set-mid-x!
     ;;
-    ;; DESCRIPTION: Method which sets xpos, the x-coordinate of the center of
-    ;;              the asteroid object, to a new value, new-mid-x.
-    ;;
+    ;; DESCRIPTION: When the object has been given a new value for it's mid-xpos
+    ;;              field set-mid-x! calculates and sets a new value for the
+    ;;              xpos field.
+    ;;            
     ;; INPUT: new-mid-x - an integer.
     ;;
     ;; OUTPUT: #<void>
@@ -118,12 +118,13 @@
       (set! xpos (- new-mid-x radius)))
 
 
-    ;; METHOD: set-mid-x!
+    ;; METHOD: set-mid-y!
     ;;
-    ;; DESCRIPTION: Method which sets ypos, the x-coordinate of the center of
-    ;;              the asteroid object, to a new value, new-mid-x.
-    ;;
-    ;; INPUT: new-mid-x - an integer.
+    ;; DESCRIPTION: When the object has been given a new value for it's mid-ypos
+    ;;              field set-mid-y! calculates and sets a new value for the
+    ;;              ypos field.
+    ;;            
+    ;; INPUT: new-mid-y - an integer.
     ;;
     ;; OUTPUT: #<void>
     (define/public (set-mid-y! new-mid-y)
@@ -170,8 +171,7 @@
 
 
 
-;;--------------------- Medium-asteroids----------------------
-
+;;---------------------------- Medium asteroids---------------------------------
 
 
 (define medium-asteroid%
@@ -200,22 +200,24 @@
     ;; and assign them to new variable names.
     (inherit-field [new-xpos xpos]
                    [new-ypos ypos])
-    
+
+    ;; As before.
     (define/override (update! dc)
       (super update! dc))
     
     ;; We override the definition of the destroy-asteroid method to make it
     ;; create 3 even smaller asteroids. We supply the make-object call
-    ;; with our inherited coordinates to, just as before, create the new asteroids
-    ; close to where the old one disappeared.
+    ;; with our inherited coordinates to, just as before, create the new
+    ;; asteroids close to where the old one disappeared.
     (define/override (destroy! name)
       (for ([i 2])
         (make-object small-asteroid% (+ new-xpos (* 10 i)) (+ new-ypos (* 10 i))))
       (hash-remove! asteroids-hash name))))
 
 
-;; -------------------- Small-asteroid ----------------
-;; As before, only smaller, weaker and faster.
+;; ---------------------------- Small asteroid ---------------------------------
+
+;; As before; only smaller, faster and worth more points.
 (define small-asteroid%
   (class asteroid%
     (init-field [sxpos 0]
@@ -223,16 +225,17 @@
     (super-new [xpos sxpos]
                [ypos sypos]
                [diameter 45]
-               [points 150]
+               [points 100]
                [name (gensym "small-asteroid")]
                [dx ((eval (random-ref '(+ -))) (random 4 7))]
                [dy ((eval (random-ref '(+ -))) (random 4 7))])
     
+    ;; As before.
     (define/override-final (update! dc)
       (super update! dc))
     
-    ;; The smallest asteroids don't create new asteroids when they're destroyed, but
-    ;; simply vanish.
+    ;; The smallest asteroids don't create new asteroids when they're destroyed,
+    ;; but simply vanish.
     (define/override-final (destroy! name)
       (hash-remove! asteroids-hash name))))
 

@@ -1,18 +1,35 @@
 #lang racket
 (require racket/gui)
 (require racket/random)
-(require "hash-tables.rkt")
+(require "utilities.rkt")
 (require "bullet.rkt")
 (provide ufo%)
 
-;; PURPOSE:
+;; PURPOSE: ufo% contains information, physics and rendering for the ufos in
+;; the game.
 ;;
-;; LAST MODIFIED:
+;; LAST MODIFIED: 16-05-19
 ;;
-;; AUTHORS; Oscar Göransson and Edvin Ljungstrand.
+;; AUTHORS: Oscar Göransson and Edvin Ljungstrand.
 
 (define ufo%
   (class object%
+    
+    ;;[field]         [comment]
+    
+    ;;[id])           [Id of the ship.] 
+    ;;[xpos]          [X-position for the ufo.]
+    ;;[ypos]          [y-position for the ufo.]
+    ;;[dx]            [Ufo's speed in x-direction.]
+    ;;[points]        [Number of points the object is worth.]
+    ;;[width]         [Width of the ufo]
+    ;;[height]        [Height of the ufo]
+    ;;[radius]        [Radius of the ufo.]
+    ;;[mid-xpos]      [X-pos for middle of ufo.]
+    ;;[mid-ypos]      [Y-pos for middle of ufo.]
+    ;;[image]         [Image of the ufo.]
+    ;;[[name]         [Name of the ufo.]
+    ;;                      [(gensym "ship") Gives the ship a unique name.)]
     
     (field [id 10] 
            [xpos 0] 
@@ -25,7 +42,6 @@
            [mid-xpos (+ xpos (/ width 2))]
            [mid-ypos (+ ypos (/ height 2))]
            [image (make-bitmap width (+ height 1))]
-           [ufo-level level]
            [name (gensym "ufo")])
     
     (super-new)
@@ -79,7 +95,7 @@
     ;; OUTPUT: #<void>
     (define/public (set-mid-y! new-mid-y)
       (set! ypos (+ new-mid-y radius)))
-
+    
     
     ;; OBJECT: *ufo-fire-timer*
     ;;
@@ -107,12 +123,15 @@
     ;; INPUT: None.
     ;;
     ;; OUTPUt: #<void>
-    (define/public(fire)
+    (define/public (fire)
       (let* ([bullet-name (gensym "bullet")]
+             [precision (/ 400  (* 2 level))]
+             [random-sign (if (> 1 (random 2)) - +)]
              [target (random-ref (hash-values ship-hash))]
-             [target-x (send target get-mid-xpos)]
-             [target-y (send target get-mid-ypos)]
-             [target-angle (atan (/ (- target-y mid-ypos) (- target-x mid-xpos)))]
+             [target-x (random-sign (send target get-mid-xpos) precision)]
+             [target-y (random-sign (send target get-mid-ypos) precision)]
+             [target-angle (atan
+                            (/ (- target-y mid-ypos) (- target-x mid-xpos)))]
              [offset-x (* 45 (cos target-angle))]
              [offset-y (* 45 (sin target-angle))]
              [bullet-dx (* 20 (cos target-angle))]
@@ -132,7 +151,7 @@
                      (sign bullet-dx)
                      (sign bullet-dy)))))
     
-
+    
     ;; METHOD: obj-has-collided-with
     ;;
     ;; DESCRIPTION: A method which determines what happens when an ufo object
@@ -161,8 +180,8 @@
     (define (destroy! name)
       (send *ufo-fire-timer* stop)
       (hash-remove! ufo-hash name))
-
-
+    
+    
     ;; METHOD: create-ufo-image
     ;;
     ;; DESCRIPTION: A method which draws an "ufo shape" on a bitmap object,
@@ -208,9 +227,9 @@
               (- width (/ width 3)) height)))
     
     (create-ufo-image image)
-
-
-    ;; METHOD: update
+    
+    
+    ;; METHOD: update!
     ;;
     ;; DESCRIPTION: Draws a bitmap objet, image, on a drawing context at the
     ;;              (xpos ypos) location and then calculates new values for

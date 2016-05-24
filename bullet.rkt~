@@ -1,32 +1,51 @@
 #lang racket
 (require racket/gui)
 (provide bullet%)
-(require "hash-tables.rkt")
+(require "utilities.rkt")
 
 ;; Purpose: Defines a bullet in our game and its properties.
 ;;
-;; Last modified: 16-05-16
+;; Last modified: 16-05-19
 ;;
 ;; AUTHORS: Oscar Göransson and Edvin Ljungstrand.
 
 (define bullet%
   (class object%
-    (init-field
-     [creator null] ;; Object of the creator of the bullet??????????????
-     [id 3]         ;; Id of the bullet 
-     [name null]    ;; Name of the bullet
-     [xpos 0]       ;; X-position fo the bullet
-     [ypos 0]       ;; Y-position för the bullet
-     [dx 0]         ;; Speed in x-direction
-     [dy 0])        ;; Speed in y-direction
+
+    ;;[field]         [comment]
+
+    ;;[creator]       [The object wich created the bullet]
+    ;;[id])           [Id of the bullet.]
+    ;;[name]          [Name of the bullet.]
+    ;;[xpos]          [X-position for the bullet.]
+    ;;[ypos]          [y-position for the bullet.]
+    ;;[dx]            [Bullet's speed in x-direction.]
+    ;;[dy]            [Bullet's speed in y-direction.]
+
+    ;;[health]        [Health of the bullet.]
+    ;;[diameter]      [Diameter of the bullet.]
+    ;;[radius]        [Radius of the bullet.]
+    ;;[points]        [Number of points the object is worth.]
+    ;;[mid-xpos]      [X-pos for middle of bullet.]
+    ;;[mid-ypos]      [Y-pos for middle of bullet.]   
+    ;;[image]         [Image of the bullet.]
     
-    (field [health 2]     ;; Health of the bullet
-           [diameter 8]   ;; Diameter of the bullet
-           [points 0]     ;; Points of the bullet
-           [radius (/ diameter 2)]      ;; Radius of the bullet
-           [mid-xpos (+ xpos radius)]   ;; X-position of the middle for bullet
-           [mid-ypos (+ ypos radius)]   ;; Y-position of the middle for bullet
-           [image (make-bitmap diameter diameter)]) ;; Image of the bullet
+    (init-field
+     [creator null] 
+     [id 3]         
+     [name null]   
+     [xpos 0]       
+     [ypos 0]       
+     [dx 0]         
+     [dy 0])        
+    
+    (field [health 2]     
+           [diameter 8]   
+           [radius (/ diameter 2)]      
+           [points 0]   
+           [mid-xpos (+ xpos radius)]  
+           [mid-ypos (+ ypos radius)]   
+           [image (make-bitmap diameter diameter)]) 
     
     (super-new)
 

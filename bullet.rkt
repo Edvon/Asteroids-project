@@ -73,11 +73,13 @@
     (define/public (get-mid-ypos)
       mid-ypos)
     
-    ;; METHOD: set-mid-x! and set-mid-y!
+    ;; METHOD: set-mid-x!
     ;;
-    ;; DESCRIPTION: Lets us set the position depending on the middle position.
-    ;;
-    ;; INPUT: New position for middle of the bullet.
+    ;; DESCRIPTION: When the object has been given a new value for it's mid-xpos
+    ;;              field set-mid-x! calculates and sets a new value for the
+    ;;              xpos field.
+    ;;            
+    ;; INPUT: new-mid-x - an integer.
     ;;
     ;; OUTPUT: #<void>
     (define/public (set-mid-x! new-mid-x)
@@ -85,13 +87,13 @@
     (define/public (set-mid-y! new-mid-y)
       (set! ypos (- new-mid-y radius)))
 
-    ;; METHOD: obj-has-collided-with
+    ;; METHOD: set-mid-y!
     ;;
-    ;; DESCRIPTION: When bullet has collided the creator of the bullets
-    ;; score is updated with the points for the object wich has collided
-    ;; with the bullet and the bullet is then deleted.
-    ;;
-    ;; INPUT: Colliding object
+    ;; DESCRIPTION: When the object has been given a new value for it's mid-ypos
+    ;;              field set-mid-y! calculates and sets a new value for the
+    ;;              ypos field.
+    ;;            
+    ;; INPUT: new-mid-y - an integer.
     ;;
     ;; OUTPUT: #<void>
     (define/public (obj-has-collided-with obj)
