@@ -129,7 +129,9 @@
     ;; OUTPUT: #<void>
     (define/public (set-mid-y! new-mid-y)
       (set! ypos (- new-mid-y radius)))
-    
+
+    ;; When an asteroid collides with any other object the destroy! method is
+    ;; called.
     (define/public (obj-has-collided-with obj)
       (destroy! name))
     

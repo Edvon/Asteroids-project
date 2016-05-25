@@ -139,7 +139,7 @@
     ;; INPUT: name - a string.
     ;;
     ;; OUTPUT: #<void>
-    (define (destroy! name)
+    (define/public (destroy! name)
       (hash-set! dead-ship-hash name this)
       (hash-remove! ship-hash name))
     

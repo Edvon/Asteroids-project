@@ -67,6 +67,9 @@
   (when
       (or (hash-empty? ship-hash)
           (hash-ref key-hash 'escape))
+    (for-each (lambda (ship)
+                (send ship destroy! (get-field name ship)))
+              (hash-values ship-hash))
     (send dc draw-text "Game over!" 900 540)
     (send dc draw-text (string-append "Level " (number->string level))
           915 560)
