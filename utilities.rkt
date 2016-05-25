@@ -3,14 +3,15 @@
 (provide (all-defined-out))
 
 ;; PURPOSE: Utilities is where we store useful procedures and hash-tables
-;; so they can be called and used in all modules.
+;;          so they can be called and used in all modules.
 ;;
-;; LAST MODIFIED: 16-05-19
+;; LAST MODIFIED: 16-05-25
 ;;
 ;; AUTHORS: Oscar Göransson and Edvin Ljungstrand.
 
 
 ;;------------------------------- Hash tables ----------------------------------
+
 ;; We use hash tables to store stuff throughout the project
 ;; because they're mutable, and it turns out to be rather convenient.
 
@@ -36,6 +37,14 @@
 
 
 ;; ------------------------------- Level handling ------------------------------
+
+;; Upon game initialization the level variable is defined to be 1.
+(define level 1)
+
+;; A set:er procedure used to update the level variable when a level is
+;; completed.
+(define (update-level!)
+  (set! level (+ level 1)))
 
 ;; Initialize level-completed? and define it to be false.
 (define level-completed? #f)
@@ -84,20 +93,11 @@
   (when (hash-empty? asteroids-hash)
     (level-completed! #t)))
 
-;; Upon game initialization the level variable is defined to be 1.
-(define level 1)
-
-;; A set:er procedure used to update the level variable when a level is
-;; completed.
-(define (update-level!)
-  (set! level (+ level 1)))
-
-;; Add the escpae key to the hash table key-hash and give it the value #f.
-(hash-set! key-hash 'escape #f)
-
 
 ;; -------------------------------- Utilities ----------------------------------
 
+;; Add the escpae key to the hash table key-hash and give it the value #f.
+(hash-set! key-hash 'escape #f)
 
 ;; PROCEDURE: screen-wrap
 ;;
@@ -135,7 +135,7 @@
   (hash-set! key-hash key-code val))
 
 
-;; METHOD: collision?
+;; PROCEDURE: collision?
 ;;
 ;; DESCRIPTION: A procedure that checks if the distance between the centers of
 ;;              two objects is smaller than the sum of the objects' radii.
@@ -160,8 +160,7 @@
                  (sqr (- mid-ypos-1 mid-ypos-2))))
         (+ radius-1 radius-2))))
 
-
-;; METHOD: draw-stats
+;; PROCEDURE: draw-stats
 ;;
 ;; DESCRIPTION: A procedure responsible for drawing the values of some of the
 ;;              ship objects' fields on a drawing context, providing the player
