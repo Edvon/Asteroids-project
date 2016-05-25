@@ -6,9 +6,9 @@
 (provide ufo%)
 
 ;; PURPOSE: ufo% contains information, physics and rendering for the ufos in
-;; the game.
+;;          the game.
 ;;
-;; LAST MODIFIED: 16-05-19
+;; LAST MODIFIED: 16-05-25
 ;;
 ;; AUTHORS: Oscar Göransson and Edvin Ljungstrand.
 
@@ -18,18 +18,18 @@
     ;;[field]         [comment]
     
     ;;[id])           [Id of the ship.] 
-    ;;[xpos]          [X-position for the ufo.]
-    ;;[ypos]          [y-position for the ufo.]
+    ;;[xpos]          [The bitmap's x-coordinate.]
+    ;;[ypos]          [The bitmap's y-coordinate.]
     ;;[dx]            [Ufo's speed in x-direction.]
     ;;[points]        [Number of points the object is worth.]
     ;;[width]         [Width of the ufo's bitmap.]
     ;;[height]        [Height of the ufo's bitmap.]
     ;;[radius]        [Radius of a circle describing the ufo's hitbox.]
     ;;[health]        [The ufo's health.]
-    ;;[mid-xpos]      [X-pos for middle of ufo.]
-    ;;[mid-ypos]      [Y-pos for middle of ufo.]
-    ;;[image]         [Image of the ufo.]
-    ;;[[name]         [Name of the ufo.]
+    ;;[mid-xpos]      [x-coordinate for the middle of the ufo.]
+    ;;[mid-ypos]      [y-coordinate for the middle of the ufo.]
+    ;;[image]         [The ufo's bitmap.]
+    ;;[name]          [Name of the ufo.]
     ;;                [(gensym "ship") Gives the ship a unique name.)]
     
     (field [id 10] 
@@ -112,7 +112,7 @@
     
     
     ;; Start the ufo-fire-timer. We tell it to call the fire method
-    ;; every 0.5 s.
+    ;; every 2 seconds.
     (send *ufo-fire-timer* start 2000)
     
     
@@ -237,10 +237,7 @@
     ;;
     ;; DESCRIPTION: Draws a bitmap objet, image, on a drawing context at the
     ;;              (xpos ypos) location and then calculates new values for
-    ;;              xpos, mid-xpos and mid-ypos. Only the x-coordinate is
-    ;;              updated since ufo's only move in the x-direction. However
-    ;;              for the sake of the screen-wrap method in game% the mid-ypos
-    ;;              field is still updated.
+    ;;              xpos, mid-xpos and mid-ypos. Only the x-coordinate
     ;;
     ;; INPUT: dc - a drawing context.
     ;;
@@ -251,6 +248,5 @@
       (send dc draw-bitmap image xpos ypos)
       (set! xpos (+ xpos dx))
       (set! mid-xpos (+ xpos radius))
-      (set! mid-ypos (+ ypos radius))
       (set! health (- health 0.1)))))
 

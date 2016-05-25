@@ -5,10 +5,10 @@
 (provide medium-asteroid%)
 (require "utilities.rkt")
 
-;; Purpose: asteroid% contains the information for creating asteroids
-;; at random locations, thus all the use of the random procedure.
+;; Purpose: asteroid% contains the information for creating asteroids,
+;;          handling their movement and their logic.
 ;;
-;; Last modified: 16-05-19
+;; Last modified: 16-05-25
 ;;
 ;; AUTHORS: Oscar Göransson and Edvin Ljungstrand.
 
@@ -17,9 +17,9 @@
 
     ;;[field]         [comment]
 
-    ;;[xpos]          [X-position for the asteroid.]
-    ;;[ypos]          [y-position for the asteroid.]
-    ;;[diameter]      [Diameter of the asteroid.]
+    ;;[xpos]          [The bitmap's x-coordinate.]
+    ;;[ypos]          [The bitmap's y-coordinate.]
+    ;;[diameter]      [The height and width of the asteroids's bitmap.]
     ;;[points]        [Number of points the object is worth.]
     ;;[name]          [Name of the asteroid.]
     ;;                ((gensym "asteroid") Gives the asteroid a unique name.)
@@ -28,9 +28,9 @@
     ;;[dy]            [Asteroid's speed in y-direction.]
     ;;                (A random number between -4 and 4.)
     ;;[id])           [Id of the asteroid.]  
-    ;;[radius]        [Radius of the asteroid.]
-    ;;[mid-xpos]      [X-pos for middle of asteroid.]
-    ;;[mid-ypos]      [Y-pos for middle of asteroid.]   
+    ;;[radius]        [diameter / 2]
+    ;;[mid-xpos]      [x-coordinate for the middle of the asteroid.]
+    ;;[mid-ypos]      [y-coordinate for the middle of the asteroid.]  
 
     (init-field [xpos (random 1920)] 
                 [ypos (random 1080)] 
@@ -51,7 +51,7 @@
     ;; We add the astreoid to the hash-table asteroids-hash.
     (hash-set! asteroids-hash name this)
     
-    ;; Method for generating a bitmap.
+    ;; Define a image to be a quadratic bitmap.
     (define image (make-bitmap diameter diameter))
     
 

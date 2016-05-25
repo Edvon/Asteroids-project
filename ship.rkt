@@ -4,10 +4,10 @@
 (require "bullet.rkt")
 (require "utilities.rkt")
 
-;; Purpose: ship% contains information for creating and handling
-;; the input to ships.
+;; Purpose: ship% contains information for creating ship objects and handling
+;;          their input and logic.
 ;;
-;; Last modified: 16-05-16
+;; Last modified: 16-05-25
 ;;
 ;; AUTHORS: Oscar Göransson and Edvin Ljungstrand.
 
@@ -26,7 +26,7 @@
     ;;[ypos]          [The bitmap's y-coordinate.]
     ;;[angle]         [Angle at which the ship is turned.]
     ;;[diameter]      [The height and width of the ship's bitmap.]
-    ;;[radius]        [Diameter / 2]
+    ;;[radius]        [diameter / 2]
     ;;[mid-xpos]      [x-coordinate for the middle of the ship.]
     ;;[mid-ypos]      [y-coordinate for the middle of the ship.]
     ;;[tip-xpos]      [x-coordinate for the tip of the ship.]
@@ -304,7 +304,11 @@
     
     ;; METHOD: update-ship
     ;;
-    ;; DESCRIPTION: Calculates the ship's new position and renders it.
+    ;; DESCRIPTION: Calculates the ship's new position, updates fields and
+    ;;              renders the ship. The ship bitmap is translated so that the
+    ;;              center of the bitmap becomes the origo of it's
+    ;;              coordinate-system, then it's rotated angle radians around
+    ;;              the new origo, drawn and translated back.
     ;;
     ;; INPUT: dc - drawing context
     ;;
