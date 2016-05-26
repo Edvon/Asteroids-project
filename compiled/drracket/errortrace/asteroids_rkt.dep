@@ -1,1 +1,0 @@
-("6.4" ("3ec070e18977da8473ed227d47d5431f3ccf5b54" . "a00ea80495721ee6f7847755f7589ef9446f6ad5") #"/Users/Edvin/Documents/Git/Asteroids-project/utilities.rkt" (collects #"errortrace" #"errortrace-key.rkt") (collects #"racket" #"gui.rkt") (collects #"racket" #"main.rkt") (collects #"racket" #"random.rkt") (collects #"racket" #"runtime-config.rkt"))
