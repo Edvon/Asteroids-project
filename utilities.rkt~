@@ -39,8 +39,6 @@
 ;; ------------------------------- Level handling ------------------------------
 
 ;; Upon game initialization the level variable is defined to be 1.
-;; only updated by (update-level!) wich is only called when all asteroids is
-;; destroyed. Used to let procedures know what level it currently is. 
 (define level 1)
 
 ;; A set:er procedure used to update the level variable when a level is
