@@ -228,7 +228,7 @@
   (send *asteroids-game-canvas* set-canvas-background
         (send the-color-database find-color "black"))
   (send *asteroids-window* show #t)
-  (send *game-timer* start 50)
+  (send *game-timer* start 40)
   (send *asteroids-game-canvas* focus))
 
 ;; Define a procedure which shows the game menu.
